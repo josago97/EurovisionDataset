@@ -49,3 +49,10 @@ It is the root of the dataset.
 | running | integer | Place on the running |
 | place | integer | Place in the ranking |
 | scores | Score[] | Score and voting |
+
+### Score
+| Attribute | Type|  Description |  
+|---|---|---|
+| name | string | Origin of points (total, tele and jury if the year is greater than 2015) |
+| points | integer | Total points earned |
+| votes | Dictionary<string, int> | Votes received from each country (using the country code) |
