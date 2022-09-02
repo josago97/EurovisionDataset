@@ -10,7 +10,6 @@ It is the root of the dataset.
 | contests | Contest[] | All editions of the contest | 
 
 ### Contest
-It contains the data of the contest of a certain year.
 | Attribute | Type|  Description |  
 |---|---|---|
 | year | integer | Year in which the contest was held |
@@ -22,3 +21,16 @@ It contains the data of the contest of a certain year.
 | slogan | string | Slogan of the edition |
 | contestants | Contestant[] | All the contestants of the edition |
 | rounds | Round[] | All rounds of the contest |
+
+### Contestant
+| Attribute | Type|  Description |  
+|---|---|---|
+| id | integer | Contestant ID (used in Performance ) |
+| country | string | Code of the country that is represented |
+| artist | string | Name of the singer/group performing |
+| song | string | Song title |
+| composers | string[] | Song composers |
+| writers | string[] | Song lyricists |
+| lyrics | string | Lyrics of the song (in the corresponding language) |
+| videoUrl | string | Link to a Youtube video showing the song |
+| broadcaster | string | Candidate country broadcaster|
