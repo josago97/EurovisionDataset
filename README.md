@@ -41,3 +41,11 @@ It is the root of the dataset.
 | name | string | Round name (final, semifinal if the year is between 2004 and 2007, semifinal1 or semifinal2 if the year is greater than 2007  ) |
 | date | DateTime | Date and time the round took place |
 | performances | Performance[] | Results of the performances of the contestants in this round |
+
+### Performance
+| Attribute | Type|  Description |  
+|---|---|---|
+| contestantId | integer | Contestant ID |
+| running | integer | Place on the running |
+| place | integer | Place in the ranking |
+| scores | Score[] | Score and voting |
