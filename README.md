@@ -34,3 +34,10 @@ It is the root of the dataset.
 | lyrics | string | Lyrics of the song (in the corresponding language) |
 | videoUrl | string | Link to a Youtube video showing the song |
 | broadcaster | string | Candidate country broadcaster|
+
+### Round
+| Attribute | Type|  Description |  
+|---|---|---|
+| name | string | Round name (final, semifinal if the year is between 2004 and 2007, semifinal1 or semifinal2 if the year is greater than 2007  ) |
+| date | DateTime | Date and time the round took place |
+| performances | Performance[] | Results of the performances of the contestants in this round |
