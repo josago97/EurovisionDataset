@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\1995_russia_lyrics.txt" />
+    <None Remove="Resources\2005_russia_lyrics.txt" />
+    <None Remove="Resources\2015_russia_lyrics.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\1995_russia_lyrics.txt" />
+    <EmbeddedResource Include="Resources\2005_russia_lyrics.txt" />
+    <EmbeddedResource Include="Resources\2015_russia_lyrics.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Playwright" Version="1.25.0" />
+    <PackageReference Include="Sharplus" Version="1.2.1" />
+  </ItemGroup>
+
+</Project>
