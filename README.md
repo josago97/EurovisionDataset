@@ -1,6 +1,15 @@
 # Eurovision Song Contest Dataset
+This repository is a freely accessible data set that contains information about the participants and votes of all the editions of the Eurovision Song Contest.
+
+Every year the data set will be updated with the results of the contest, from the first edition in 1956 until now.
+
+The data is obtained from the [Eschome](https://eschome.net/) and [EurovisionWorld](https://eurovisionworld.com) websites.
+
+## Downloading the dataset
+The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the eurovision.json file found in the main branch.
 
 ## Data description
+The dataset is in JSON format.
 
 ### Eurovision
 It is the root of the dataset.
