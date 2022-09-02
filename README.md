@@ -64,4 +64,4 @@ It is the root of the dataset.
 |---|---|---|
 | name | string | Origin of points (total, tele and jury if the year is greater than 2015) |
 | points | integer | Total points earned |
-| votes | Dictionary<string, int> | Votes received from each country (using the country code) |
+| votes | Dictionary<string, integer> | Votes received from each country (using the country code) |
