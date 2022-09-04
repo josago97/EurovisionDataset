@@ -25,11 +25,11 @@ It is the root of the dataset.
 | arena | string | Building where the contest was held |
 | city | string | Host city |
 | country | string | Host country code |
-| broadcasters | string[] | Host broadcasters of the edition |
+| broadcasters | string[] | Host broadcasters of the contest |
 | presenters | string[] | Presenters of the contest |
-| slogan | string | Slogan of the edition |
+| slogan | string | Slogan of the contest |
 | logoUrl | string | Link to contest thumbnail |
-| contestants | Contestant[] | All the contestants of the edition |
+| contestants | Contestant[] | All contestants of the contest |
 | rounds | Round[] | All rounds of the contest |
 
 ### Contestant
