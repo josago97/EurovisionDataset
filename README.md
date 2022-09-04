@@ -3,7 +3,7 @@ This repository is a freely accessible data set that contains information about 
 
 Every year the data set will be updated with the results of the contest, from the first edition in 1956 until now.
 
-The data is obtained from the [Eschome](https://eschome.net/) and [EurovisionWorld](https://eurovisionworld.com) websites.
+The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision World](https://eurovisionworld.com) and [Eurovision LOD](https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision/page/about) websites.
 
 ## Downloading the dataset
 The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the *eurovision.json* file found in the main branch.
@@ -28,6 +28,7 @@ It is the root of the dataset.
 | broadcasters | string[] | Host broadcasters of the edition |
 | presenters | string[] | Presenters of the contest |
 | slogan | string | Slogan of the edition |
+| logoUrl | string | Link to contest thumbnail |
 | contestants | Contestant[] | All the contestants of the edition |
 | rounds | Round[] | All rounds of the contest |
 
@@ -38,6 +39,8 @@ It is the root of the dataset.
 | country | string | Code of the country that is represented |
 | artist | string | Name of the singer/group performing |
 | song | string | Song title |
+| tone | string | Key and scale of the song |
+| bpm | integer | Beats per minute of the song |
 | composers | string[] | Song composers |
 | writers | string[] | Song lyricists |
 | lyrics | string | Lyrics of the song (in the corresponding language) |
