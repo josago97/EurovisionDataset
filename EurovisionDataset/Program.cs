@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using EurovisionDataset.Data;
 using EurovisionDataset.Scrapers;
@@ -11,6 +12,7 @@ public class Program
 
     public static async Task Main(params string[] args)
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
         Microsoft.Playwright.Program.Main(new[] { "install" });
 
         Properties.ReadArguments(args);

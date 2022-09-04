@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="dotNetRdf" Version="2.7.5" />
     <PackageReference Include="Microsoft.Playwright" Version="1.25.0" />
     <PackageReference Include="Sharplus" Version="1.2.1" />
   </ItemGroup>

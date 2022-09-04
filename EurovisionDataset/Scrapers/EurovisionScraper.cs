@@ -18,41 +18,46 @@ namespace EurovisionDataset.Scrapers
 
         private async Task<Contest[]> GetContestsAsync(int start, int end)
         {
-            List<Contest> contests = new List<Contest>();
+            List<Contest> result = new List<Contest>();
 
             Eschome eschome = new Eschome();
+            EurovisionLOD eurovisionLOD = new EurovisionLOD();
             EurovisionWorld eurovisionWorld = new EurovisionWorld();
-            List<Task> tasks = new List<Task>();
 
+            Contest[] contests = await eschome.GetContestsAsync(start, end);
+            eurovisionLOD.GetContests(contests);
+
+            List<Task> tasks = new List<Task>();
             await eurovisionWorld.RemovePopUpAsync();
 
-            foreach (Contest contest in await eschome.GetContestsAsync(start, end))
+            for (int i = 0; i < contests.Length; i++)
             {
+                Contest contest = contests[i]; 
                 Console.WriteLine($"Add {contest.Year}");
-                tasks.Add(Task.Run(async () =>
-                {
-                    await eurovisionWorld.GetContestAsync(contest);
-                    InsertNoAvailableData(contest);
-                    LogNoAvailableData(contest);
-                    lock (contests) contests.Add(contest);
-                }));
+                tasks.Add(eurovisionWorld.GetContestAsync(contest));
 
-                if (tasks.Count == TASK_GROUP_SIZE) 
-                { 
+                if (tasks.Count == TASK_GROUP_SIZE || i == contests.Length - 1)
+                {
                     await Task.WhenAll(tasks);
                     tasks.Clear();
                 }
             }
 
-            if (tasks.Count > 0) await Task.WhenAll(tasks);
+            result.AddRange(contests);
 
             if (start <= 2020 && 2020 <= end)
             {
                 Console.WriteLine("Add 2020");
-                contests.Add(await eurovisionWorld.GetContestAsync(2020));
+                result.Add(await eurovisionWorld.GetContestAsync(2020));
             }
 
-            return contests.OrderBy(c => c.Year).ToArray();
+            foreach (Contest contest in result)
+            {
+                InsertNoAvailableData(contest);
+                LogNoAvailableData(contest);
+            }
+
+            return result.OrderBy(c => c.Year).ToArray();
         }
 
         private void InsertNoAvailableData(Contest contest)
@@ -61,6 +66,14 @@ namespace EurovisionDataset.Scrapers
 
             switch (contest.Year)
             {
+                case 2022:
+                    contest.LogoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Eurovision_2022_Official_Logo.jpg/250px-Eurovision_2022_Official_Logo.jpg";
+                    break;
+
+                case 2020:
+                    contest.LogoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/Eurovision_Song_Contest_2020.svg/188px-Eurovision_Song_Contest_2020.svg.png";
+                    break;
+
                 case 2015:
                     contestant = contest.Contestants.First(c => c.Country == "RU");
                     contestant.Lyrics = Utils.ReadEmbeddedTextResource($"{RESOURCES_PATH}.2015_russia_lyrics.txt");

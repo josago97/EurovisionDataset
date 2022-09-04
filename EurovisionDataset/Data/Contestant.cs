@@ -6,6 +6,8 @@ public class Contestant
     public string Country { get; set; }
     public string Artist { get; set; }
     public string Song { get; set; }
+    public string Tone { get; set; }
+    public int Bpm { get; set; } = -1;
     public string[] Composers { get; set; }
     public string[] Writers { get; set; }
     public string Lyrics { get; set; }
