@@ -1,7 +1,7 @@
 # Eurovision Song Contest Dataset
 This repository is a freely accessible data set that contains information about the participants and votes of all the editions of the Eurovision Song Contest.
 
-Every year the data set will be updated with the results of the contest, from the first edition in 1956 until now.
+Every year the dataset will be updated with the results of the contest, from the first edition in 1956 until now.
 
 The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision World](https://eurovisionworld.com) and [Eurovision LOD](https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision/page/about) websites.
 
