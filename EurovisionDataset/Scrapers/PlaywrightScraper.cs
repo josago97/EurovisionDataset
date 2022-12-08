@@ -1,25 +1,24 @@
-﻿using System.Threading;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 
 namespace EurovisionDataset.Scrapers;
 
 public class PlaywrightScraper : IDisposable
 {
-    private static readonly BrowserTypeLaunchOptions BROWSER_OPTIONS = new BrowserTypeLaunchOptions()
-    {
-        Headless = true
-    };
-
     private static IPlaywright playwright;
     private static IBrowser browser;
     private static IBrowserContext context;
 
     public IPage Page { get; private set; }
 
-    public static async Task InitAsync()
+    public static async Task InitAsync(bool headless)
     {
+        BrowserTypeLaunchOptions options = new BrowserTypeLaunchOptions()
+        {
+            Headless = headless
+        };
+
         playwright = await Playwright.CreateAsync();
-        browser = await playwright.Chromium.LaunchAsync(BROWSER_OPTIONS);
+        browser = await playwright.Chromium.LaunchAsync(options);
         context = await browser.NewContextAsync();
         context.SetDefaultTimeout(0);
     }

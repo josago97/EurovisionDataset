@@ -1,9 +1,9 @@
 ﻿namespace EurovisionDataset.Data;
 
-public class Performance
+public abstract class Performance
 {
     public int ContestantId { get; set; }
-    public int Running { get; set; }
-    public int Place { get; set; }
-    public Score[] Scores { get; set; }
+    public int Running { get; set; } = -1;
+    public int Place { get; set; } = -1;
+    public IEnumerable<Score> Scores { get; set; }
 }

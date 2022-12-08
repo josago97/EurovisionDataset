@@ -1,8 +1,8 @@
 ﻿namespace EurovisionDataset.Data;
 
-public class Round
+public abstract class Round
 {
     public string Name { get; set; }
-    public DateTime Date { get; set; }
-    public Performance[] Performances { get; set; }
+    public string Date { get; set; }
+    public virtual IEnumerable<Performance> Performances { get; set; }
 }

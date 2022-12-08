@@ -18,8 +18,9 @@ namespace EurovisionDataset
             { "DE", "Germany" }, { "GR", "Greece" },
             { "HU", "Hungary" }, { "IS", "Iceland" },
             { "IE", "Ireland" }, { "IL", "Israel" },
-            { "IT", "Italy" }, { "LV", "Latvia" },
-            { "LT", "Lithuania" }, { "LU", "Luxembourg" },
+            { "IT", "Italy" }, {"KZ", "Kazakhstan"},
+            { "LV", "Latvia" }, { "LT", "Lithuania" }, 
+            { "LU", "Luxembourg" },
             { "MT", "Malta" }, { "MD", "Moldova" },
             { "MC", "Monaco" }, { "ME", "Montenegro" },
             { "MA", "Morocco" }, { "NL", "Netherlands" },
@@ -31,17 +32,21 @@ namespace EurovisionDataset
             { "SI", "Slovenia" }, { "ES", "Spain" },
             { "SE", "Sweden" }, { "CH", "Switzerland" },
             { "TR", "Turkey" }, { "UA", "Ukraine" },
-            { "GB", "United Kingdom" }, { "YU", "Yugoslavia" },
+            { "GB", "United Kingdom" }, { "GB-WLS", "Wales" },
+            { "YU", "Yugoslavia" },
         };
         
         public static string GetCountryCode(string countryName)
         {
             string result = null;
-            countryName = countryName.Replace("&", "and");
+            countryName = countryName.Replace("The ", "", StringComparison.OrdinalIgnoreCase)
+                .Replace("&", "and").Trim();
 
             try
             {
-                result = COUNTRY_CODES.First(p => p.Value == countryName).Key;
+                result = COUNTRY_CODES.First(p => 
+                    p.Value.Equals(countryName, StringComparison.OrdinalIgnoreCase))
+                    .Key;
             }
             catch
             {
@@ -53,7 +58,7 @@ namespace EurovisionDataset
 
         public static string GetCountryName(string countryCode)
         {
-            return COUNTRY_CODES[countryCode];
+            return COUNTRY_CODES[countryCode.ToUpper()];
         }
 
         public static Stream OpenEmbeddedResource(string path)
@@ -78,6 +83,28 @@ namespace EurovisionDataset
             using StreamReader reader = new StreamReader(OpenEmbeddedResource(path));
 
             return reader.ReadToEnd();
+        }
+
+        public static async Task<IList<T>> ParallelTaskFor<T>(int fromInclusive, int toExclusive, int groupSize, Func<int, Task<T>> func)
+        {
+            List<Task<T>> tasks = new List<Task<T>>();
+            List<T> result = new List<T>();
+            int count = 0;
+
+            for (int i = fromInclusive; i < toExclusive; i++)
+            {
+                tasks.Add(func(i));
+
+                if (tasks.Count == groupSize || i == toExclusive - 1)
+                {
+                    result.AddRange(await Task.WhenAll(tasks));
+                    tasks.Clear();
+                }
+
+                count++;
+            }
+
+            return result;
         }
     }
 }
