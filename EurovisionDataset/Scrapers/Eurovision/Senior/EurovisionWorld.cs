@@ -1,11 +1,13 @@
 ﻿using System.Text.RegularExpressions;
-using EurovisionDataset.Data.Eurovision.Senior;
+using EurovisionDataset.Data.Senior;
 using Microsoft.Playwright;
 
 namespace EurovisionDataset.Scrapers.Eurovision.Senior;
 
 public class EurovisionWorld : Eurovision.EurovisionWorld
 {
+    private const string BROADCASTERS_KEY = "broadcaster";
+
     #region Contest
 
     protected override string GetContestPageUrl(int year)
@@ -17,10 +19,9 @@ public class EurovisionWorld : Eurovision.EurovisionWorld
     {
         Contest result = new Contest() { Year = year };
         Dictionary<string, string> contestData = await GetContestDataAsync(playwright.Page);
-
         SetContestInfo(result, contestData);
-        IList<Contestant> contestants = await GetContestantsAsync(playwright.Page, year);
 
+        IList<Contestant> contestants = await GetContestantsAsync(playwright.Page, year);
         result.Contestants = contestants;
         result.Rounds = await GetRoundsAsync(playwright, year, contestants);
 
@@ -52,6 +53,16 @@ public class EurovisionWorld : Eurovision.EurovisionWorld
         return result;
     }
 
+    protected override void SetContestInfo(Data.Contest contest, Dictionary<string, string> data)
+    {
+        base.SetContestInfo(contest, data);
+
+        Contest seniorContest = contest as Contest;
+
+        if (data.TryGetValue(BROADCASTERS_KEY, out string broadcasters))
+            seniorContest.Broadcasters = broadcasters.Split(", ");
+    }
+
     #endregion
 
     #region Contestant
@@ -60,22 +71,20 @@ public class EurovisionWorld : Eurovision.EurovisionWorld
     {
         List<Contestant> result = new List<Contestant>();
         IReadOnlyList<IElementHandle> tables = await page.QuerySelectorAllAsync("#voting_table");
-        int idCount = 0;
 
         foreach (IElementHandle table in tables)
         {
             IReadOnlyList<IElementHandle> rows = await table.QuerySelectorAllAsync("tbody tr");
 
-            foreach (IElementHandle row in rows)
+            for (int i = 0; i < rows.Count; i++)
             {
+                IElementHandle row = rows[i];
                 IReadOnlyList<IElementHandle> linkElements = await row.QuerySelectorAllAsync("a");
                 string countryCode = await GetCountryCodeAsync(row, year);
 
-                Contestant contestant = new Contestant() { Id = idCount, Country = countryCode };
+                Contestant contestant = new Contestant() { Id = i, Country = countryCode };
                 await GetContestantAsync(linkElements[1], contestant);
                 result.Add(contestant);
-
-                idCount++;
             }
         }
 

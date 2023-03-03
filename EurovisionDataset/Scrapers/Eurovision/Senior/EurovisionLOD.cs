@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using EurovisionDataset.Data.Eurovision.Senior;
+using EurovisionDataset.Data.Senior;
 using VDS.RDF.Parsing;
 using VDS.RDF.Query;
 using VDS.RDF.Writing;
@@ -11,6 +11,13 @@ namespace EurovisionDataset.Scrapers.Eurovision.Senior;
 public class EurovisionLOD
 {
     private const string ENDPOINT = "https://so-we-must-think.space/greenstone3-lod3/greenstone/query";
+    private const string EUROVISION_COLLECTION = "https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision";
+    private static readonly Dictionary<string, string> PREFIXES = new Dictionary<string, string>
+    {
+        { "gsdlextracted", "http://greenstone.org/gsdlextracted#" },
+        { "xsd", "http://www.w3.org/2001/XMLSchema#" },
+        { "dc", "http://purl.org/dc/elements/1.1/" }
+    };
 
     public void GetContests(IList<Contest> contests)
     {
@@ -64,7 +71,6 @@ public class EurovisionLOD
                         ?.Contestants?.Where(c =>
                         {
                             string countryName = Utils.GetCountryName(c.Country).Replace(" ", "");
-
                             return countryName.Equals(country, StringComparison.OrdinalIgnoreCase);
                         });
 
@@ -78,7 +84,6 @@ public class EurovisionLOD
                     else
                         contestant = contestants.FirstOrDefault();
                 }
-
             }
 
             if (contestant != null)
@@ -96,23 +101,22 @@ public class EurovisionLOD
                     contestant.Bpm = (int)Math.Round(bpmValue);
             }
         }
-
     }
 
     private Dictionary<string, string>[] GetContestData(int start, int end)
     {
         SparqlParameterizedString query = new SparqlParameterizedString();
 
-        query.CommandText = @"SELECT DISTINCT ?year ?logo WHERE {
+        query.CommandText = $@"SELECT DISTINCT ?year ?logo WHERE {{
                 
-            ?esc_entrant_uri dc:Relation.isPartOf <https://so-we-must-think.space/greenstone3/eurovision-lod-foo-library/collection/eurovision>.
+            ?esc_contest_uri dc:Relation.isPartOf <{EUROVISION_COLLECTION}>.
 
-            ?esc_entrant_uri gsdlextracted:Year ?year.
-            ?esc_entrant_uri gsdlextracted:YearLogoImg ?logo.
+            ?esc_contest_uri gsdlextracted:Year ?year.
+            ?esc_contest_uri gsdlextracted:YearLogoImg ?logo.
 
             BIND(xsd:integer(?year) AS ?year_int)
             FILTER(@start <= ?year_int && ?year_int <= @end)
-        }
+        }}
         ORDER BY ASC(?year_int)";
 
         query.SetLiteral("start", start);
@@ -143,8 +147,8 @@ public class EurovisionLOD
 
         query.Namespaces.AddNamespace("essentia", new Uri("http://upf.edu/essentia#"));
 
-        query.CommandText = @"SELECT ?identifier ?key ?scale ?bpm WHERE {
-            ?esc_entrant_uri dc:Relation.isPartOf <https://so-we-must-think.space/greenstone3/eurovision-lod-foo-library/collection/eurovision>.
+        query.CommandText = $@"SELECT ?identifier ?key ?scale ?bpm WHERE {{
+            ?esc_entrant_uri dc:Relation.isPartOf <{EUROVISION_COLLECTION}>.
 
             ?esc_entrant_uri gsdlextracted:Identifier ?identifier.
             
@@ -152,10 +156,10 @@ public class EurovisionLOD
             BIND(xsd:integer(?year) AS ?year_int)
             FILTER(@start <= ?year_int && ?year_int <= @end)
 
-            OPTIONAL { ?esc_entrant_uri essentia:tonal_key_edma_key ?key. }
-            OPTIONAL { ?esc_entrant_uri essentia:tonal_key_edma_scale ?scale. }
-            OPTIONAL { ?esc_entrant_uri essentia:rhythm_bpm ?bpm. }
-        }
+            OPTIONAL {{ ?esc_entrant_uri essentia:tonal_key_edma_key ?key. }}
+            OPTIONAL {{ ?esc_entrant_uri essentia:tonal_key_edma_scale ?scale. }}
+            OPTIONAL {{ ?esc_entrant_uri essentia:rhythm_bpm ?bpm. }}
+        }}
         ORDER BY ASC(?year_int)";
 
         query.SetLiteral("start", start);
@@ -170,9 +174,8 @@ public class EurovisionLOD
         //endpoint.DefaultGraphs.Add("https://so-we-must-think.space/greenstone3/eurovision-lod-foo-library/collection/eurovision");
         endpoint.ResultsAcceptHeader = "application/sparql-results+json";
 
-        query.Namespaces.AddNamespace("gsdlextracted", new Uri("http://greenstone.org/gsdlextracted#"));
-        query.Namespaces.AddNamespace("xsd", new Uri("http://www.w3.org/2001/XMLSchema#"));
-        query.Namespaces.AddNamespace("dc", new Uri("http://purl.org/dc/elements/1.1/"));
+        foreach (var pair in PREFIXES)
+            query.Namespaces.AddNamespace(pair.Key, new Uri(pair.Value));
 
         SparqlQueryParser parser = new SparqlQueryParser();
         SparqlQuery sparqlQuery = parser.ParseFromString(query);

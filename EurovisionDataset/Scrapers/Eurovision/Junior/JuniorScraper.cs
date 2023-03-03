@@ -1,23 +1,14 @@
-﻿using EurovisionDataset.Data.Eurovision.Junior;
+﻿using EurovisionDataset.Data.Junior;
 
 namespace EurovisionDataset.Scrapers.Eurovision.Junior;
 
-public class JuniorScraper : BaseScraper
+public class JuniorScraper : BaseScraper<Contest, Contestant>
 {
-    private const int FIRST_YEAR = 2003;
+    protected override int FirstYear => 2003;
 
-    public async Task<IEnumerable<Contest>> GetDataAsync(int start, int end)
+    protected override async Task GetContestsAsync(int start, int end, List<Contest> result)
     {
-        List<Contest> result = new List<Contest>();
-
-        if (end >= FIRST_YEAR)
-        {
-            start = Math.Max(start, FIRST_YEAR);
-
-            EurovisionWorld eurovisionWorld = new EurovisionWorld();
-            await GetContestsAsync(start, end, result, eurovisionWorld.GetContestAsync);
-        }
-
-        return result;
+        EurovisionWorld eurovisionWorld = new EurovisionWorld();
+        await GetContestsAsync(start, end, result, eurovisionWorld.GetContestAsync);
     }
 }

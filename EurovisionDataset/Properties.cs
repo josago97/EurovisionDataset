@@ -8,11 +8,20 @@ public static class Properties
     private const string END_ARGUMENT = "-end";
     public static int END { get; private set; } = DateTime.Now.Year;
 
+    private const string EUROVISION_SENIOR_ARGUMENT = "-s";
+    public static bool EUROVISION_SENIOR { get; private set; } = false;
+
+    private const string EUROVISION_JUNIOR_ARGUMENT = "-j";
+    public static bool EUROVISION_JUNIOR { get; private set; } = false;
+
+    private const string HIDE_BROWSER_ARGUMENT = "-hide";
+    public static bool HIDE_BROWSER { get; private set; } = false;
+
     public static void ReadArguments(string[] arguments)
     {
-        for (int i = 0; i < arguments.Length; i += 1)
+        for (int i = 0; i < arguments.Length; i ++)
         {
-            string command = arguments[i];
+            string command = arguments[i].ToLower();
 
             switch (command)
             {
@@ -23,7 +32,22 @@ public static class Properties
                 case END_ARGUMENT:
                     END = int.Parse(arguments[++i]);
                     break;
+
+                case HIDE_BROWSER_ARGUMENT:
+                    HIDE_BROWSER = true;
+                    break;
+
+                case EUROVISION_JUNIOR_ARGUMENT:
+                    EUROVISION_JUNIOR = true;
+                    break;
+
+                case EUROVISION_SENIOR_ARGUMENT:
+                    EUROVISION_SENIOR = true;
+                    break;
             }
         }
+
+        if (!EUROVISION_JUNIOR && !EUROVISION_SENIOR)
+            EUROVISION_JUNIOR = EUROVISION_SENIOR = true;
     }
 }

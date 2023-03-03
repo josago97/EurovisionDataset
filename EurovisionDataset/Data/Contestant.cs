@@ -3,17 +3,17 @@
 public abstract class Contestant : IEquatable<Contestant>
 {
     public int Id { get; set; }
+    public string Country { get; set; }
     public string Artist { get; set; }
     public string Song { get; set; }
-    public IList<Lyrics> Lyrics { get; set; }
-    public IList<string> VideoUrls { get; set; }
-    public IList<string> Dancers { get; set; }
-    public IList<string> Backings { get; set; }
-    public IList<string> Composers { get; set; }
-    public IList<string> Lyricists { get; set; }
-    public IList<string> Writers { get; set; }
-    public string Conductor { get; set; }
-    public string StageDirector { get; set; }
+    public IEnumerable<Lyrics> Lyrics { get; set; }
+    public IEnumerable<string> VideoUrls { get; set; }
+    public IEnumerable<string> Dancers { get; set; }
+    public IEnumerable<string> Backings { get; set; }
+    public IEnumerable<string> Composers { get; set; }
+    public IEnumerable<string> Lyricists { get; set; }
+    public IEnumerable<string> Writers { get; set; }
+
 
     public bool Equals(Contestant other)
     {

@@ -1,4 +1,4 @@
-﻿namespace EurovisionDataset.Data.Eurovision.Senior;
+﻿namespace EurovisionDataset.Data.Senior;
 
 public class Score : Data.Score
 {

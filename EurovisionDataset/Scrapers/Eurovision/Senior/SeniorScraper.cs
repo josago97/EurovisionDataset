@@ -1,33 +1,21 @@
-﻿using EurovisionDataset.Data.Eurovision.Senior;
+﻿using EurovisionDataset.Data.Senior;
 
 namespace EurovisionDataset.Scrapers.Eurovision.Senior;
 
-public class EurovisionScraper : BaseScraper
+public class SeniorScraper : BaseScraper<Contest, Contestant>
 {
-    private const string RESOURCES_PATH = "EurovisionDataset.Resources";
+    protected override int FirstYear => 1956;
 
-    public async Task<IEnumerable<Contest>> GetDataAsync(int start, int end)
+    protected override async Task GetContestsAsync(int start, int end, List<Contest> result)
     {
-        List<Contest> result = new List<Contest>();
-
         await GetContestsFromEurovisionWorld(result, start, end);
         await GetContestsFromEschome(result);
         GetContestsFromEurovisionLOD(result);
-
-        foreach (Contest contest in result)
-        {
-            InsertNoAvailableData(contest);
-            LogNoAvailableData(contest);
-        }
-
-        result.Sort((a, b) => a.Year - b.Year);
-
-        return result;
     }
 
     private async Task GetContestsFromEurovisionWorld(List<Contest> contests, int start, int end)
     {
-        EurovisionWorld eurovisionWorld = new EurovisionWorld();
+        EurovisionWorld2 eurovisionWorld = new EurovisionWorld2();
 
         await GetContestsAsync(start, end, contests, eurovisionWorld.GetContestAsync);
     }
@@ -44,7 +32,7 @@ public class EurovisionScraper : BaseScraper
         eurovisionLOD.GetContests(contests);
     }
 
-    private void InsertNoAvailableData(Contest contest)
+    protected override void InsertUnavailableData(Contest contest)
     {
         Contestant contestant;
 
@@ -60,49 +48,29 @@ public class EurovisionScraper : BaseScraper
 
             case 2015:
                 contestant = contest.Contestants.First(c => c.Country == "RU");
-                contestant.Lyrics = GetLyrics("English", "2015_russia_lyrics");
+                contestant.Lyrics = GetLyrics("English", contestant.Song, "2015_russia_lyrics");
                 contestant.VideoUrls = new[] { "https://www.youtube.com/embed/jBVY7Glcd84" };
                 break;
 
             case 2005:
                 contestant = contest.Contestants.First(c => c.Country == "RU");
-                contestant.Lyrics = GetLyrics("English", "2005_russia_lyrics");
+                contestant.Lyrics = GetLyrics("English", contestant.Song, "2005_russia_lyrics");
                 contestant.VideoUrls = new[] { "https://www.youtube.com/embed/HQhgevOeh1E" };
                 break;
 
             case 1995:
                 contestant = contest.Contestants.First(c => c.Country == "RU");
-                contestant.Lyrics = GetLyrics("Russian", "1995_russia_lyrics");
+                contestant.Lyrics = GetLyrics("Russian", contestant.Song, "1995_russia_lyrics");
                 contestant.VideoUrls = new[] { "https://www.youtube.com/embed/mZTZPE1mV2s" };
                 break;
         }
     }
 
-    private void LogNoAvailableData(Contest contest)
+    protected override void CheckUnvailableData(Contestant contestant, List<string> noAvailable)
     {
-        foreach (Contestant contestant in contest.Contestants)
-        {
-            string countryName = Utils.GetCountryName(contestant.Country);
+        base.CheckUnvailableData(contestant, noAvailable);
 
-            if (contestant.Lyrics.IsNullOrEmpty())
-                Console.WriteLine($"Lyrics no available: {contest.Year} {countryName}");
-
-            if (contestant.VideoUrls.IsNullOrEmpty())
-                Console.WriteLine($"Video no available: {contest.Year} {countryName}");
-        }
-    }
-
-    private IList<Data.Lyrics> GetLyrics(string languages, string path)
-    {
-        List<Data.Lyrics> result = new List<Data.Lyrics>
-        {
-            new Data.Lyrics
-            {
-                Languages = languages.Split(", "),
-                Content = Utils.ReadEmbeddedTextResource($"{RESOURCES_PATH}.{path}.txt")
-            }
-        };
-
-        return result;
+        if (string.IsNullOrEmpty(contestant.Broadcaster))
+            noAvailable.Add("Broadcaster");
     }
 }

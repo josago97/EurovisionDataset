@@ -1,4 +1,4 @@
-﻿namespace EurovisionDataset.Data.National;
+﻿namespace EurovisionDataset.Data.Senior;
 
 public class Performance : Data.Performance
 {

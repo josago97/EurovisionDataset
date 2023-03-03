@@ -1,4 +1,4 @@
-﻿using EurovisionDataset.Data.Eurovision;
+﻿using EurovisionDataset.Data;
 
 namespace EurovisionDataset.Scrapers.Eurovision;
 

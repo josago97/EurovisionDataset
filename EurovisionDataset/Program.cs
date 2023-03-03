@@ -7,7 +7,6 @@ using System.Text.Json.Serialization.Metadata;
 using EurovisionDataset.Scrapers;
 using EurovisionDataset.Scrapers.Eurovision.Junior;
 using EurovisionDataset.Scrapers.Eurovision.Senior;
-using EurovisionDataset.Scrapers.National;
 
 namespace EurovisionDataset;
 
@@ -15,8 +14,7 @@ public class Program
 {
     private const string FOLDERNAME = "Dataset";
     private const string COUNTRIES_FILENAME = "countries";
-    private const string EUROVISION_FILENAME = "eurovision";
-    private const string PRESELECTION_FILENAME = "nationals";
+    private const string SENIOR_FILENAME = "eurovision";
     private const string JUNIOR_FILENAME = "junior";
 
     public static async Task Main(params string[] args)
@@ -26,16 +24,15 @@ public class Program
 
         Properties.ReadArguments(args);
 
-        await PlaywrightScraper.InitAsync(true);
+        await PlaywrightScraper.InitAsync(Properties.HIDE_BROWSER);
         Stopwatch stopwatch = Stopwatch.StartNew();
         Console.WriteLine("Extracting data...");
 
         await Scrapers.EurovisionWorld.RemovePopUpAsync();
 
         GetCountries();
-        await GetJuniorAsync();
-        //await GetNationalAsync();
-        await GetEurovisionAsync();
+        if (Properties.EUROVISION_JUNIOR) await GetJuniorAsync();
+        if (Properties.EUROVISION_SENIOR) await GetSeniorAsync();
 
         Console.WriteLine($"All data estracted at time: {stopwatch.Elapsed}");
         await PlaywrightScraper.DisposeAsync();
@@ -47,28 +44,15 @@ public class Program
         Save(Utils.COUNTRY_CODES, COUNTRIES_FILENAME);
     }
 
-    private static async Task GetEurovisionAsync()
+    private static async Task GetSeniorAsync()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         Console.WriteLine("Getting Eurovision data");
 
-        EurovisionScraper eurovisionScraper = new EurovisionScraper();
-        var data = await eurovisionScraper.GetDataAsync(Properties.START, Properties.END);
+        SeniorScraper seniorScraper = new SeniorScraper();
+        var data = await seniorScraper.GetDataAsync(Properties.START, Properties.END);
 
-        Save(data, EUROVISION_FILENAME);
-
-        Console.WriteLine("Data extracted in {0}", stopwatch.Elapsed);
-    }
-
-    private static async Task GetNationalAsync()
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        Console.WriteLine("Getting National selections data");
-
-        NationalScraper nationalScraper = new NationalScraper();
-        var data = await nationalScraper.GetDataAsync(Properties.START, Properties.END);
-
-        Save(data, PRESELECTION_FILENAME);
+        Save(data, SENIOR_FILENAME);
 
         Console.WriteLine("Data extracted in {0}", stopwatch.Elapsed);
     }
@@ -92,7 +76,8 @@ public class Program
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true,
-            TypeInfoResolver = new PolymorphicTypeResolver()
+            TypeInfoResolver = new PolymorphicTypeResolver(),
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
         Directory.CreateDirectory(FOLDERNAME);

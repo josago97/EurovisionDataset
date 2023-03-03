@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using AngleSharp.Dom;
 using EurovisionDataset.Data;
 using Microsoft.Playwright;
-using VDS.RDF.Shacl.Validation;
 
 namespace EurovisionDataset.Scrapers;
 
 public abstract class EurovisionWorld
 {
+    protected const string ARTIST_KEY = "artist";
+    protected const string SONG_KEY = "title";
     private const string URL = "https://eurovisionworld.com";
+    private const int DELAY_REQUEST = 600; //ms
+    private const int TOO_MANY_REQUESTS_DELAY = 4000; //ms
 
     public static async Task RemovePopUpAsync()
     {
@@ -47,26 +48,40 @@ public abstract class EurovisionWorld
 
     #region Contestant
 
-    protected async Task GetContestantAsync<T>(IElementHandle songLink, T contestant) where T : Contestant
+    protected async Task GetContestantAsync(IElementHandle songLink, Contestant contestant)
     {
         using PlaywrightScraper playwright = new PlaywrightScraper();
         string tagName = (await songLink.GetPropertyAsync("tagName")).ToString().ToLower();
         if (tagName != "a") songLink = await songLink.QuerySelectorAsync("a");
         string url = await songLink.GetAttributeAsync("href");
-        await LoadPageAsync(playwright, url);
 
+        await LoadPageAsync(playwright, url);
         await GetContestantInfoAsync(playwright.Page, contestant);
     }
 
-    protected async Task GetContestantInfoAsync<T>(IPage page, T contestant) where T : Contestant
+    protected async Task GetContestantInfoAsync(IPage page, Contestant contestant)
     {
-        Dictionary<string, string> data = await GetNationalDataAsync(page);
-        if (data.Count == 0) data = await GetContestantDataAsync(page);
+        Dictionary<string, string> data = await GetNationalDataAsync(page); // Junior and Nationals
+        if (data.Count == 0) data = await GetContestantDataAsync(page); // Senior
+        if (!(data.ContainsKey(ARTIST_KEY) && data.ContainsKey(SONG_KEY))) 
+            await GetArtistAndSongAsync(page, data);
 
         contestant.VideoUrls = await GetVideoUrlsAsync(page);
         contestant.Lyrics = await GetLyricsAsync(page, data);
 
         SetContestantData(data, contestant);
+    }
+
+    private async Task GetArtistAndSongAsync(IPage page, Dictionary<string, string> data)
+    {
+        IElementHandle artistAndSongElement = await page.QuerySelectorAsync(".mm h1") // Junior and Nationals
+            ?? await page.QuerySelectorAsync("h1.mm"); // Senior
+
+        string[] artistAndSong = (await artistAndSongElement.InnerTextAsync()).Split("\n")
+            .Last().Split('-').Select(s => s.Trim()).ToArray();
+
+        if (!data.ContainsKey(ARTIST_KEY)) data.Add(ARTIST_KEY, artistAndSong[0]);
+        if (!data.ContainsKey(SONG_KEY)) data.Add(SONG_KEY, artistAndSong[1].Trim('\"'));
     }
 
     private async Task<IList<Lyrics>> GetLyricsAsync(IPage page, Dictionary<string, string> data)
@@ -78,17 +93,23 @@ public abstract class EurovisionWorld
         {
             foreach (IElementHandle lyric in lyrics)
             {
+                IElementHandle title = await lyric.QuerySelectorAsync("h3");
                 IReadOnlyList<IElementHandle> paragraphs = await lyric.QuerySelectorAllAsync("p");
                 StringBuilder stringBuilder = new StringBuilder();
 
-                foreach (IElementHandle paragraph in paragraphs)
+                for (int i = 0; i < paragraphs.Count; i++)
                 {
-                    stringBuilder.AppendLine(await paragraph.InnerTextAsync());
+                    IElementHandle paragraph = paragraphs[i];
+                    string text = await paragraph.InnerTextFromHTMLAsync();
+                    
+                    stringBuilder.Append(text);
+                    if (i < paragraphs.Count - 1) stringBuilder.Append("\r");
                 }
 
                 result.Add(new Lyrics()
                 {
                     Languages = (await lyric.GetAttributeAsync("data-lyrics-version")).Split(", "),
+                    Title = await (title?.InnerTextAsync()).ForAwait(),
                     Content = stringBuilder.ToString()
                 });
             }
@@ -106,7 +127,7 @@ public abstract class EurovisionWorld
 
     private async Task<IList<string>> GetVideoUrlsAsync(IPage page)
     {
-        List<string> result = new List<string>();
+        IList<string> result = new List<string>();
         IElementHandle moreVideosButton = await page.QuerySelectorAsync(".lyrics_more_videos_div");
         if (moreVideosButton != null) await moreVideosButton.ClickAsync();
         IReadOnlyList<IElementHandle> videoElements = await page.QuerySelectorAllAsync(".vid_ratio iframe");
@@ -128,11 +149,11 @@ public abstract class EurovisionWorld
 
     protected virtual void SetContestantData(Dictionary<string, string> data, Contestant contestant)
     {
-        if (data.TryGetValue("artist", out string artist))
+        if (data.TryGetValue(ARTIST_KEY, out string artist))
             contestant.Artist = artist;
 
-        if (data.TryGetValue("title", out string title))
-            contestant.Song = title;
+        if (data.TryGetValue(SONG_KEY, out string song))
+            contestant.Song = song;
 
         if (data.TryGetValue("backing", out string backings))
             contestant.Backings = backings.Split(", ");
@@ -148,12 +169,12 @@ public abstract class EurovisionWorld
 
         if (data.TryGetValue("composer", out string composers))
             contestant.Composers = composers.Split(", ");
-
+        /*
         if (data.TryGetValue("conductor", out string conductor))
             contestant.Conductor = conductor;
 
         if (data.TryGetValue("stage director", out string stageDirector))
-            contestant.StageDirector = stageDirector;
+            contestant.StageDirector = stageDirector;*/
     }
 
     protected virtual async Task<Dictionary<string, string>> GetContestantDataAsync(IPage page)
@@ -192,8 +213,22 @@ public abstract class EurovisionWorld
     protected async Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url)
     {
         string absoluteUrl = URL + url;
+        bool retry;
+        IResponse response;
 
-        await playwright.LoadPageAsync(absoluteUrl, WaitUntilState.DOMContentLoaded);
+        do
+        {
+            retry = false;
+            response = await playwright.LoadPageAsync(absoluteUrl, WaitUntilState.DOMContentLoaded);
+            await Task.Delay(DELAY_REQUEST);
+
+            if (response.Status == 429) // Too Many Requests
+            {
+                retry = true;
+                await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+            }
+        } 
+        while (retry);
 
         return playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
     }

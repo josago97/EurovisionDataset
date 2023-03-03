@@ -1,4 +1,4 @@
-﻿using EurovisionDataset.Data.Eurovision.Senior;
+﻿using EurovisionDataset.Data.Senior;
 using Microsoft.Playwright;
 
 namespace EurovisionDataset.Scrapers.Eurovision.Senior;
@@ -16,14 +16,15 @@ public class Eschome
         foreach (Contest contest in contests)
         {
             int year = contest.Year;
-            if (year == 2020) year = 2021;
+            if (year == 2020) year = 2021; // 2020 was cancelled, so 2021 data are equal to 2020 data
             ContestData data = contestsData.FirstOrDefault(c => c.Year == year);
 
             if (data != null)
             {
                 contest.Country = data.Country;
-                contest.City= data.City;
+                contest.City = data.City;
                 contest.Arena = data.Location;
+                contest.Presenters = data.Presenters;
             }
         }
     }
@@ -71,9 +72,64 @@ public class Eschome
         return result;
     }
 
+    private async Task<IList<ContestantData>> GetContestantsDataAsync(int year)
+    {
+        using PlaywrightScraper playwright = new PlaywrightScraper();
+        await GoToContestantsTableAsync(playwright, year);
+
+        return await GetContestantsFromTableAsync(playwright);
+    }
+
+    private async Task GoToContestantsTableAsync(PlaywrightScraper playwright, int year)
+    {
+        await playwright.LoadPageAsync(URL);
+
+        IElementHandle submit = await playwright.Page.WaitForSelectorAsync("#submit4");
+        IElementHandle dropdown = await submit.QuerySelectorAsync("select");
+        await dropdown.SelectOptionAsync(new[] { year.ToString() });
+        IElementHandle checkbox = await submit.QuerySelectorAsync("input");
+        await checkbox.SetCheckedAsync(true);
+
+        await submit.ClickAsync();
+        await playwright.Page.WaitForLoadStateAsync(LoadState.Load);
+    }
+
+    private async Task<IList<ContestantData>> GetContestantsFromTableAsync(PlaywrightScraper playwright)
+    {
+        List<ContestantData> result = new List<ContestantData>();
+        IReadOnlyList<IElementHandle> rows = await playwright.Page.QuerySelectorAllAsync("#tabelle1 tbody tr");
+
+        for (int i = 0; i < rows.Count; i += 2)
+        {
+            IElementHandle top = rows[i];
+            IElementHandle buttom = rows[i + 1];
+
+            IReadOnlyList<IElementHandle> topRow = await top.QuerySelectorAllAsync("td");
+            IReadOnlyList<IElementHandle> buttomRow = await buttom.QuerySelectorAllAsync("td");
+
+            ContestantData contestant = new ContestantData()
+            {
+                Country = await GetCountry(topRow[1]),
+                Artist = await topRow[2].InnerTextAsync(),
+                Song = await topRow[3].InnerTextAsync(),
+                Composers = (await buttomRow[2].InnerTextAsync()).Split(", "),
+                Writers = (await buttomRow[3].InnerTextAsync()).Split(", "),
+                Broadcaster = await buttomRow[1].InnerTextAsync(),
+            };
+
+            result.Add(contestant);
+        }
+
+        return result.ToArray();
+    }
 
 
 
+
+
+
+
+    /*
 
     public async Task<Contest[]> GetContestsAsync(int start, int end)
     {
@@ -121,24 +177,12 @@ public class Eschome
     private async Task<Contestant[]> GetContestantsAsync(int year)
     {
         using PlaywrightScraper playwright = new PlaywrightScraper();
-        await GoToContestantsTable(playwright, year);
+        await GoToContestantsTableAsync(playwright, year);
 
         return await GetContestantsFromTableAsync(playwright);
     }
 
-    private async Task GoToContestantsTable(PlaywrightScraper playwright, int year)
-    {
-        await playwright.LoadPageAsync(URL);
 
-        IElementHandle submit = await playwright.Page.WaitForSelectorAsync("#submit4");
-        IElementHandle dropdown = await submit.QuerySelectorAsync("select");
-        await dropdown.SelectOptionAsync(new[] { year.ToString() });
-        IElementHandle checkbox = await submit.QuerySelectorAsync("input");
-        await checkbox.SetCheckedAsync(true);
-
-        await submit.ClickAsync();
-        await playwright.Page.WaitForLoadStateAsync(LoadState.Load);
-    }
 
     private async Task<Contestant[]> GetContestantsFromTableAsync(PlaywrightScraper playwright)
     {
@@ -167,7 +211,7 @@ public class Eschome
         }
 
         return result.ToArray();
-    }
+    }*/
 
     private async Task<string> GetCountry(IElementHandle element)
     {
@@ -186,5 +230,15 @@ public class Eschome
         public string Location { get; set; }
         public string[] Broadcasters { get; set; }
         public string[] Presenters { get; set; }
+    }
+
+    private class ContestantData
+    {
+        public string Country { get; set; }
+        public string Artist { get; set; }
+        public string Song { get; set; }
+        public string[] Composers { get; set; }
+        public string[] Writers { get; set; }
+        public string Broadcaster { get; set; }
     }
 }
