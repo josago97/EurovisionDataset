@@ -1,29 +1,48 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Publish dataset
+
+# Declaring custom variables
+env:
+  PROJECT_NAME: EurovisionDataset
+  DATASET_FOLDER: Dataset
+  DATASET_BRANCH: dataset
 
 on:
   workflow_dispatch:
-  #push:
-   # branches: [ "main" ]
-  #pull_request:
-  #  branches: [ "main" ]
 
 jobs:
   build:
-
+  
+    # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
-
+    
     steps:
+    # uses GitHub's checkout action to checkout code form the master branch
     - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+    
+    # Set up .NET SDK
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3.0.3
       with:
         dotnet-version: 7.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+        
+    # Build project to the release-folder
+    - name: Build .NET Project
+      run: dotnet build $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -o release --nologo
+
+     # Run scrapers
+    - name: Run scrapers
+      working-directory: release
+      run: 
+        currentYear = $(date +'%Y')
+        $PROJECT_NAME.exe -end $currentYear -hide
+    
+    # Commit dataset to dataset branch
+    #- name: Commit dataset to dataset branch
+    #  uses: JamesIves/github-pages-deploy-action@3.7.1
+    #  with:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    BRANCH: $DATASET_BRANCH
+    #    FOLDER: release/$DATASET_FOLDER
