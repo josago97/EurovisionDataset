@@ -32,6 +32,10 @@ jobs:
     - name: Build .NET Project
       run: dotnet build $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -o release --nologo
 
+    - name: Ver cosas
+      working-directory: release
+      run: ls
+
      # Run scrapers
     - name: Run scrapers
       working-directory: release
