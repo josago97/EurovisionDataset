@@ -32,21 +32,10 @@ jobs:
     - name: Build .NET Project
       run: dotnet build $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -o release --nologo
 
-    - name: Ver cosas
-      working-directory: release
-      run: ls
-      
-    - name: Ver cosas 2
-      working-directory: release
-      run: dotnet -h
-      
-    - name: Ver cosas 3
-      run: dotnet -h
-
      # Run scrapers
     - name: Run scrapers
       working-directory: release
-      run: dotnet EurovisionDataset.dll -hide -junior
+      run: dotnet $PROJECT_NAME.dll -hide -junior
     
     - name: Commit and Push Changes
       run: |
