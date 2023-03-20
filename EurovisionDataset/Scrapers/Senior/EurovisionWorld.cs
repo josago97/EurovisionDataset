@@ -1,16 +1,19 @@
 ﻿using System.Text.RegularExpressions;
-using EurovisionDataset.Data.Senior;
+using EurovisionDataset.Data;
 using Microsoft.Playwright;
+using Contest = EurovisionDataset.Data.Senior.Contest;
+using Contestant = EurovisionDataset.Data.Senior.Contestant;
+using Score = EurovisionDataset.Data.Senior.Score;
 
-namespace EurovisionDataset.Scrapers.Eurovision.Senior;
+namespace EurovisionDataset.Scrapers.Senior;
 
-public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
+public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 {
     private const string CONTESTANT_BROADCASTER_KEY = "broadcaster";
     private const string CONTESTANT_COMMENTATOR_KEY = "commentator";
     private const string CONTESTANT_CONDUCTOR_KEY = "conductor";
     private const string CONTESTANT_JURY_KEY = "jury member";
-    private const string CONTESTANT_SPOKEPERSON_KEY = "spokeperson";
+    private const string CONTESTANT_SPOKESPERSON_KEY = "spokesperson";
     private const string CONTESTANT_STAGE_DIRECTOR_KEY = "stage director";
 
     #region Contest
@@ -30,7 +33,7 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
         {
             if (!string.IsNullOrEmpty(line))
             {
-                string[] keyAndValue = line.Split(':');
+                string[] keyAndValue = line.Split(": ");
 
                 if (keyAndValue.Length > 1)
                 {
@@ -124,8 +127,8 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
         if (data.TryGetValue(CONTESTANT_JURY_KEY, out string juryMembers))
             contestant.Jury = SplitData(juryMembers);
 
-        if (data.TryGetValue(CONTESTANT_SPOKEPERSON_KEY, out string spokeperson))
-            contestant.Spokesperson = spokeperson;
+        if (data.TryGetValue(CONTESTANT_SPOKESPERSON_KEY, out string spokesperson))
+            contestant.Spokesperson = spokesperson;
 
         if (data.TryGetValue(CONTESTANT_STAGE_DIRECTOR_KEY, out string stageDirector))
             contestant.StageDirector = stageDirector;
@@ -135,7 +138,7 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
 
     #region Round
 
-    protected override async Task<IReadOnlyList<Data.Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
+    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
         List<Round> result = new List<Round>();
 
@@ -164,26 +167,25 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
 
     private async Task<Round> GetRoundAsync(IPage page, int year, string roundName, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
+        (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(year, contestData);
+
         return new Round()
         {
             Name = roundName.Replace("-", ""),
-            Date = GetDate(contestData),
+            Date = dateTime.Date,
+            Time = dateTime.Time,
             Performances = await GetPerformancesAsync(page, year, contestants)
         };
     }
 
-    private string GetDate(Dictionary<string, string> contestData)
+    private (DateOnly, TimeOnly?) GetDateAndTime(int year, Dictionary<string, string> contestData)
     {
-        string result = null;
+        (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(contestData);
 
-        if (contestData.TryGetValue("date", out string date))
-        {
-            Regex regex = new Regex(@"[0-9]*:"); //Para quitar la hora y ponerla bien
-            Match match = regex.Match(date);
-            result = $"{(match.Success ? date.Substring(0, match.Index) : date).Trim()} 21:00 +2";
-        }
+        if (!dateTime.Time.HasValue && year >= 1963) 
+            dateTime.Time = new TimeOnly(19, 0);
 
-        return result;
+        return dateTime;
     }
 
     private async Task<IReadOnlyList<Performance>> GetPerformancesAsync(IPage page, int year, IReadOnlyList<Contestant> contestants)
@@ -192,41 +194,43 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
 
         string selector = "#voting_table .v_table_main tbody tr";
         IReadOnlyList<IElementHandle> rows = await page.QuerySelectorAllAsync(selector);
-        /*Dictionary<string, IReadOnlyList<Score>> scores = await GetAllScoresAsync(page);
+        Dictionary<string, List<Score>> scores = await GetAllScoresAsync(page);
 
         foreach (IElementHandle row in rows)
         {
-            Performance performance = new Performance();
-            string countryCode = await GetCountryCodeAsync(row);
-            IReadOnlyList<IElementHandle> columns = await row.QuerySelectorAllAsync("td");
-
-            if (year == 1956)
-            {
-                string song = (await columns[2].InnerTextAsync()).Split("\n")[0].Trim();
-
-                performance.ContestantId = contestants.First(c => c.Country == countryCode
-                            && c.Song.Equals(song, StringComparison.OrdinalIgnoreCase)).Id;
-
-                performance.Scores = new Score[0];
-            }
-            else
-            {
-                performance.ContestantId = contestants.First(c => c.Country == countryCode).Id;
-                performance.Scores = scores[countryCode];
-            }
-
-            performance.Place = int.Parse(await columns[0].InnerTextAsync());
-            performance.Running = int.Parse(await columns[columns.Count - 1].InnerTextAsync());
-
-            result.Add(performance);
-        }*/
+            result.Add(await GetPerformanceAsync(row, year, contestants, scores));
+        }
 
         return result;
     }
 
-    private async Task<Dictionary<string, IList<Score>>> GetAllScoresAsync(IPage page)
+    private async Task<Dictionary<string, List<Score>>> GetAllScoresAsync(IPage page)
     {
-        Dictionary<string, IList<Score>> result = new Dictionary<string, IList<Score>>();
+        Dictionary<string, List<Score>> result = new Dictionary<string, List<Score>>();
+        string buttonSelector = ".scoreboard_button_div button";
+        IReadOnlyList<ILocator> buttons = await page.Locator(buttonSelector).AllAsync();
+
+        if (buttons == null || buttons.Count <= 1)
+        {
+            await GetScoresFromScoreboardAsync(page, "total", result);
+        }
+        else
+        {
+            foreach (ILocator button in buttons)
+            {
+                string scoreName = (await button.InnerTextAsync()).ToLower();
+                await button.ClickAsync();
+                await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+                await GetScoresFromScoreboardAsync(page, scoreName, result);
+            }
+        }
+
+        return result;
+    }
+    /*
+    private async Task<Dictionary<string, List<Score>>> GetAllScoresAsync(IPage page)
+    {
+        Dictionary<string, List<Score>> result = new Dictionary<string, List<Score>>();
         string buttonSelector = ".scoreboard_button_div button";
         IReadOnlyList<IElementHandle> buttons = await page.QuerySelectorAllAsync(buttonSelector);
 
@@ -236,8 +240,9 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
         }
         else
         {
-            foreach (IElementHandle button in buttons)
+            for (int i = 0; i < buttons.Count; i++)
             {
+                IElementHandle button = buttons[i];
                 string scoreName = (await button.InnerTextAsync()).ToLower();
                 await button.ClickAsync();
                 await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
@@ -248,8 +253,8 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
 
         return result;
     }
-
-    private async Task GetScoresFromScoreboardAsync(IPage page, string scoreName, Dictionary<string, IList<Score>> allScores)
+    */
+    private async Task GetScoresFromScoreboardAsync(IPage page, string scoreName, Dictionary<string, List<Score>> allScores)
     {
         string selector = "table.scoreboard_table tbody tr";
         IReadOnlyList<IElementHandle> rows = await page.QuerySelectorAllAsync(selector);
@@ -277,7 +282,7 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
                 }
             }
 
-            if (allScores.TryGetValue(countryCode, out IList<Score> scores))
+            if (allScores.TryGetValue(countryCode, out List<Score> scores))
                 scores.Add(score);
             else
             {
@@ -285,6 +290,33 @@ public class EurovisionWorld2 : EurovisionWorld2<Contest, Contestant>
                 scores.Add(score);
             }
         }
+    }
+
+    private async Task<Performance> GetPerformanceAsync(IElementHandle row, int year, IReadOnlyList<Contestant> contestants, Dictionary<string, List<Score>> scores)
+    {
+        Performance result = new Performance();
+        string countryCode = await GetCountryCodeAsync(row);
+        IReadOnlyList<IElementHandle> columns = await row.QuerySelectorAllAsync("td");
+
+        if (year == 1956)
+        {
+            string song = (await columns[2].InnerTextAsync()).Split("\n")[0].Trim();
+
+            result.ContestantId = contestants.First(c => c.Country == countryCode
+                        && c.Song.Equals(song, StringComparison.OrdinalIgnoreCase)).Id;
+
+            result.Scores = new Score[0];
+        }
+        else
+        {
+            result.ContestantId = contestants.First(c => c.Country == countryCode).Id;
+            result.Scores = scores[countryCode];
+        }
+
+        result.Place = int.Parse(await columns[0].InnerTextAsync());
+        result.Running = int.Parse(await columns[columns.Count - 1].InnerTextAsync());
+
+        return result;
     }
 
     #endregion

@@ -7,11 +7,7 @@ namespace EurovisionDataset.Scrapers;
 
 public abstract class EurovisionWorld
 {
-    protected const string ARTIST_KEY = "artist";
-    protected const string SONG_KEY = "title";
-    private const string URL = "https://eurovisionworld.com";
-    private const int DELAY_REQUEST = 600; //ms
-    private const int TOO_MANY_REQUESTS_DELAY = 4000; //ms
+    protected const string URL = "https://eurovisionworld.com";
 
     public static async Task RemovePopUpAsync()
     {
@@ -23,106 +19,164 @@ public abstract class EurovisionWorld
 
         if (popUpElement != null) await popUpElement.ClickAsync();
     }
+}
+
+public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
+    where TContest : Contest, new()
+    where TContestant : Contestant, new()
+{
+    protected const string CONTEST_PRESENTERS_KEY = "host";
+    protected const string CONTEST_SLOGAN_KEY = "slogan";
+    protected const string CONTEST_VOTING_KEY = "voting";
+
+    protected const string CONTESTANT_COUNTRY_KEY = "country";
+    protected const string CONTESTANT_ARTIST_KEY = "artist";
+    protected const string CONTESTANT_SONG_KEY = "title";
+
+    protected const string ROUND_DATETIME_KEY = "date";
+
+    protected const string DATA_SEPARATOR = ", ";
+    private const int DELAY_REQUEST = 800; //ms
+    private const int TOO_MANY_REQUESTS_DELAY = 10000; //ms
 
     #region Contest
 
-    public virtual async Task<Contest> GetContestAsync(int year)
+    public virtual async Task<TContest> GetContestAsync(int year)
     {
-        Contest result = null;
+        TContest result;
         using PlaywrightScraper playwright = new PlaywrightScraper();
         string url = GetContestPageUrl(year);
+        bool retry = false;
 
-        if (await LoadPageAsync(playwright, url))
+        do
         {
-            result = await GetContestAsync(playwright, year);
+            if (retry) await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+            await LoadPageAsync(playwright, url);
+            IReadOnlyList<IElementHandle> contestantsTableRows = await GetContestantsTableRowsAsync(playwright.Page);
+            retry = contestantsTableRows.Count == 0;
         }
+        while (retry);
+
+        result = await GetContestAsync(playwright, year);
 
         return result;
     }
 
     protected abstract string GetContestPageUrl(int year);
 
-    protected abstract Task<Contest> GetContestAsync(PlaywrightScraper playwright, int year);
+    private async Task<TContest> GetContestAsync(PlaywrightScraper playwright, int year)
+    {
+        TContest result = new TContest() { Year = year };
+        Dictionary<string, string> data = new Dictionary<string, string>();
+
+        await GetContestDataAsync(playwright.Page, data);
+        SetContestData(result, data);
+
+        IReadOnlyList<TContestant> contestans = await GetContestantsAsync(playwright.Page, year);
+        result.Contestants = contestans;
+        result.Rounds = await GetRoundsAsync(playwright, year, data, contestans);
+
+        return result;
+    }
+
+    protected abstract Task GetContestDataAsync(IPage page, Dictionary<string, string> data);
+
+    protected virtual void SetContestData(TContest contest, Dictionary<string, string> data)
+    {
+        if (data.TryGetValue(CONTEST_PRESENTERS_KEY, out string presenters))
+            contest.Presenters = SplitData(presenters);
+
+        if (data.TryGetValue(CONTEST_SLOGAN_KEY, out string slogan))
+            contest.Slogan = slogan;
+
+        if (data.TryGetValue(CONTEST_VOTING_KEY, out string voting))
+            contest.Voting = voting;
+    }
 
     #endregion
 
     #region Contestant
 
-    protected async Task GetContestantAsync(IElementHandle songLink, Contestant contestant)
+    private async Task<IReadOnlyList<TContestant>> GetContestantsAsync(IPage page, int year)
     {
+        List<TContestant> result = new List<TContestant>();
+        IReadOnlyList<IElementHandle> rows = await GetContestantsTableRowsAsync(page);
         using PlaywrightScraper playwright = new PlaywrightScraper();
-        string tagName = (await songLink.GetPropertyAsync("tagName")).ToString().ToLower();
-        if (tagName != "a") songLink = await songLink.QuerySelectorAsync("a");
-        string url = await songLink.GetAttributeAsync("href");
 
-        await LoadPageAsync(playwright, url);
-        await GetContestantInfoAsync(playwright.Page, contestant);
-    }
-
-    protected async Task GetContestantInfoAsync(IPage page, Contestant contestant)
-    {
-        Dictionary<string, string> data = await GetNationalDataAsync(page); // Junior and Nationals
-        if (data.Count == 0) data = await GetContestantDataAsync(page); // Senior
-        if (!(data.ContainsKey(ARTIST_KEY) && data.ContainsKey(SONG_KEY))) 
-            await GetArtistAndSongAsync(page, data);
-
-        contestant.VideoUrls = await GetVideoUrlsAsync(page);
-        contestant.Lyrics = await GetLyricsAsync(page, data);
-
-        SetContestantData(data, contestant);
-    }
-
-    private async Task GetArtistAndSongAsync(IPage page, Dictionary<string, string> data)
-    {
-        IElementHandle artistAndSongElement = await page.QuerySelectorAsync(".mm h1") // Junior and Nationals
-            ?? await page.QuerySelectorAsync("h1.mm"); // Senior
-
-        string[] artistAndSong = (await artistAndSongElement.InnerTextAsync()).Split("\n")
-            .Last().Split('-').Select(s => s.Trim()).ToArray();
-
-        if (!data.ContainsKey(ARTIST_KEY)) data.Add(ARTIST_KEY, artistAndSong[0]);
-        if (!data.ContainsKey(SONG_KEY)) data.Add(SONG_KEY, artistAndSong[1].Trim('\"'));
-    }
-
-    private async Task<IList<Lyrics>> GetLyricsAsync(IPage page, Dictionary<string, string> data)
-    {
-        IList<Lyrics> result = new List<Lyrics>();
-        IReadOnlyList<IElementHandle> lyrics = await page.QuerySelectorAllAsync(".lyrics_div:not(.sticky)");
-
-        if (!lyrics.IsNullOrEmpty())
+        for (int i = 0; i < rows.Count; i++)
         {
-            foreach (IElementHandle lyric in lyrics)
-            {
-                IElementHandle title = await lyric.QuerySelectorAsync("h3");
-                IReadOnlyList<IElementHandle> paragraphs = await lyric.QuerySelectorAllAsync("p");
-                StringBuilder stringBuilder = new StringBuilder();
+            IElementHandle row = rows[i];
+            TContestant contestant = await GetContestantAsync(playwright, row, year);
+            contestant.Id = i;
 
-                for (int i = 0; i < paragraphs.Count; i++)
-                {
-                    IElementHandle paragraph = paragraphs[i];
-                    string text = await paragraph.InnerTextFromHTMLAsync();
-                    
-                    stringBuilder.Append(text);
-                    if (i < paragraphs.Count - 1) stringBuilder.Append("\r");
-                }
-
-                result.Add(new Lyrics()
-                {
-                    Languages = (await lyric.GetAttributeAsync("data-lyrics-version")).Split(", "),
-                    Title = await (title?.InnerTextAsync()).ForAwait(),
-                    Content = stringBuilder.ToString()
-                });
-            }
-        }
-        else if (data.TryGetValue("language", out string language))
-        {
-            result.Add(new Lyrics()
-            {
-                Languages = language.Split(", ")
-            });
+            result.Add(contestant);
         }
 
         return result;
+    }
+
+    protected abstract Task<IElementHandle> GetContestantsTableAsync(IPage page);
+
+    private async Task<IReadOnlyList<IElementHandle>> GetContestantsTableRowsAsync(IPage page)
+    {
+        IElementHandle table = await GetContestantsTableAsync(page);
+
+        return await table.QuerySelectorAllAsync("tbody tr");
+    }
+
+    protected async Task<TContestant> GetContestantAsync(PlaywrightScraper playwright, IElementHandle row, int year)
+    {
+        TContestant result = new TContestant();
+        Dictionary<string, string> data = new Dictionary<string, string>();
+        IPage page = await GoToContestantPageAsync(playwright, row);
+
+        await GetContestantDataAsync(row, page, data);
+        SetContestantData(result, data);
+
+        result.Lyrics = await GetLyricsAsync(page, data);
+        result.VideoUrls = await GetVideoUrlsAsync(page);
+
+        return result;
+    }
+
+    private async Task<IPage> GoToContestantPageAsync(PlaywrightScraper playwright, IElementHandle row)
+    {
+        IReadOnlyList<IElementHandle> links = await row.QuerySelectorAllAsync("a");
+        /*string tagName = (await songLink.GetPropertyAsync("tagName")).ToString().ToLower();
+        if (tagName != "a") songLink = await songLink.QuerySelectorAsync("a");*/
+        string url = await links[1].GetAttributeAsync("href");
+        await LoadPageAsync(playwright, url);
+
+        return playwright.Page;
+    }
+
+    protected abstract Task GetContestantDataAsync(IElementHandle row, IPage page, Dictionary<string, string> data);
+
+    protected virtual void SetContestantData(TContestant contestant, Dictionary<string, string> data)
+    {
+        if (data.TryGetValue(CONTESTANT_COUNTRY_KEY, out string country))
+            contestant.Country = country;
+
+        if (data.TryGetValue(CONTESTANT_ARTIST_KEY, out string artist))
+            contestant.Artist = artist;
+
+        if (data.TryGetValue(CONTESTANT_SONG_KEY, out string song))
+            contestant.Song = song;
+
+        if (data.TryGetValue("backing", out string backings))
+            contestant.Backings = SplitData(backings);
+
+        if (data.TryGetValue("dancer", out string dancers))
+            contestant.Dancers = SplitData(dancers);
+
+        if (data.TryGetValue("lyricist", out string lyricists))
+            contestant.Lyricists = SplitData(lyricists);
+
+        if (data.TryGetValue("songwriter", out string writers))
+            contestant.Writers = SplitData(writers);
+
+        if (data.TryGetValue("composer", out string composers))
+            contestant.Composers = SplitData(composers);
     }
 
     private async Task<IList<string>> GetVideoUrlsAsync(IPage page)
@@ -147,68 +201,49 @@ public abstract class EurovisionWorld
         return result;
     }
 
-    protected virtual void SetContestantData(Dictionary<string, string> data, Contestant contestant)
+    protected virtual async Task<IList<Lyrics>> GetLyricsAsync(IPage page, Dictionary<string, string> data)
     {
-        if (data.TryGetValue(ARTIST_KEY, out string artist))
-            contestant.Artist = artist;
+        IList<Lyrics> result = new List<Lyrics>();
+        IReadOnlyList<IElementHandle> lyrics = await page.QuerySelectorAllAsync(".lyrics_div:not(.sticky)");
 
-        if (data.TryGetValue(SONG_KEY, out string song))
-            contestant.Song = song;
-
-        if (data.TryGetValue("backing", out string backings))
-            contestant.Backings = backings.Split(", ");
-
-        if (data.TryGetValue("dancer", out string dancers))
-            contestant.Dancers = dancers.Split(", ");
-
-        if (data.TryGetValue("lyricist", out string lyricists))
-            contestant.Lyricists = lyricists.Split(", ");
-
-        if (data.TryGetValue("songwriter", out string writers))
-            contestant.Writers = writers.Split(", ");
-
-        if (data.TryGetValue("composer", out string composers))
-            contestant.Composers = composers.Split(", ");
-        /*
-        if (data.TryGetValue("conductor", out string conductor))
-            contestant.Conductor = conductor;
-
-        if (data.TryGetValue("stage director", out string stageDirector))
-            contestant.StageDirector = stageDirector;*/
-    }
-
-    protected virtual async Task<Dictionary<string, string>> GetContestantDataAsync(IPage page)
-    {
-        Dictionary<string, string> result = new Dictionary<string, string>();
-        IReadOnlyList<IElementHandle> elements = await page.QuerySelectorAllAsync("div.lyr_inf div div div");
-
-        for (int i = 0; i < elements.Count; i += 2)
+        if (!lyrics.IsNullOrEmpty())
         {
-            IElementHandle key = elements[i];
-            IElementHandle value = elements[i + 1];
+            foreach (IElementHandle lyric in lyrics)
+            {
+                IElementHandle title = await lyric.QuerySelectorAsync("h3");
+                IReadOnlyList<IElementHandle> paragraphs = await lyric.QuerySelectorAllAsync("p");
+                StringBuilder stringBuilder = new StringBuilder();
 
-            await AddDataAsync(result, key, value);
-        }
+                for (int i = 0; i < paragraphs.Count; i++)
+                {
+                    IElementHandle paragraph = paragraphs[i];
+                    string text = await paragraph.InnerTextFromHTMLAsync();
 
-        string selector = ".people_wrap.mm .people_category";
-        IReadOnlyList<IElementHandle> peopleTable = await page.QuerySelectorAllAsync(selector);
+                    stringBuilder.Append(text);
+                    if (i < paragraphs.Count - 1) stringBuilder.Append("\n\n");
+                }
 
-        foreach (IElementHandle element in peopleTable)
-        {
-            string key = await element.QuerySelectorAsync("h4.label")
-                .ContinueWithResult(e => e.InnerTextAsync());
-
-            string value = await element.QuerySelectorAllAsync("li b")
-                .ContinueWithResult(a => a.Select(e => e.InnerTextAsync()))
-                .ContinueWithResult(a => string.Join(", ", a));
-
-            AddData(result, key, value);
+                result.Add(new Lyrics()
+                {
+                    Languages = (await lyric.GetAttributeAsync("data-lyrics-version")).Split(DATA_SEPARATOR),
+                    Title = await (title?.InnerTextAsync()).ForAwait(),
+                    Content = stringBuilder.ToString()
+                });
+            }
         }
 
         return result;
     }
 
     #endregion
+
+    #region Round
+
+    protected abstract Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<TContestant> contestants);
+
+    #endregion
+
+    #region Utils
 
     protected async Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url)
     {
@@ -227,35 +262,10 @@ public abstract class EurovisionWorld
                 retry = true;
                 await Task.Delay(TOO_MANY_REQUESTS_DELAY);
             }
-        } 
+        }
         while (retry);
 
         return playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
-    }
-
-    protected async Task<Dictionary<string, string>> GetNationalDataAsync(IPage page)
-    {
-        IReadOnlyList<IElementHandle> rows = await page.QuerySelectorAllAsync(".national_data tr");
-        Dictionary<string, string> result = new Dictionary<string, string>();
-
-        foreach (IElementHandle row in rows)
-        {
-            IReadOnlyList<IElementHandle> columns = await row.QuerySelectorAllAsync("td");
-            IElementHandle key = columns[0];
-            IElementHandle value = columns[1];
-
-            await AddDataAsync(result, key, value);
-        }
-
-        return result;
-    }
-
-    protected async Task AddDataAsync(Dictionary<string, string> data, IElementHandle keyElement, IElementHandle valueElement)
-    {
-        string key = await keyElement.InnerTextAsync();
-        string value = await valueElement.InnerTextAsync();
-
-        AddData(data, key, value);
     }
 
     protected void AddData(Dictionary<string, string> data, string key, string value)
@@ -264,6 +274,45 @@ public abstract class EurovisionWorld
 
         if (key.EndsWith('s')) key = key.Substring(0, key.Length - 1);
 
-        data.TryAdd(key, value);
+        if (!data.TryAdd(key, value)) data[key] = value;
     }
+
+    protected string[] SplitData(string data)
+    {
+        return data.Replace(" and ", DATA_SEPARATOR).Split(DATA_SEPARATOR);
+    }
+
+    protected (DateOnly, TimeOnly?) GetDateAndTime(Dictionary<string, string> contestData)
+    {
+        string[] data = contestData[ROUND_DATETIME_KEY].Split(DATA_SEPARATOR);
+        DateOnly date = DateOnly.Parse(data[0]);
+        TimeOnly? time = null;
+
+        if (data.Length == 2)
+        {
+            string timeData = data[1];
+
+            Regex endTimeRegex = new Regex(@"-.*:[0-9]+ *"); // Para quitar la hora en la que acaba el certamen
+            timeData = endTimeRegex.Replace(timeData, "");
+
+            DateTime datetimeData = DateTime.Parse(timeData.Replace("CEST", "+2")
+                .Replace("CET", "+1")
+                .Replace("UTC", ""));
+
+            time = TimeOnly.FromDateTime(datetimeData.ToUniversalTime());
+        }
+
+        return (date, time);
+
+        /*
+        Regex regex = new Regex(@"[0-9]*:"); //Para quitar la hora
+        Match match = regex.Match(date);
+        if (match.Success) date = date.Substring(0, match.Index);
+        date = date.Trim();
+        if (year >= 1963) date = $"{date} 21:00 CEST";
+        */
+        //return DateTime.Parse(date);
+    }
+
+    #endregion
 }

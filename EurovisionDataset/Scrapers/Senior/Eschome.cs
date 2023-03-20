@@ -1,7 +1,7 @@
 ﻿using EurovisionDataset.Data.Senior;
 using Microsoft.Playwright;
 
-namespace EurovisionDataset.Scrapers.Eurovision.Senior;
+namespace EurovisionDataset.Scrapers.Senior;
 
 public class Eschome
 {
@@ -10,6 +10,7 @@ public class Eschome
     public async Task GetContestsInfoAsync(IList<Contest> contests)
     {
         using PlaywrightScraper playwright = new PlaywrightScraper();
+
         await GoToContestsTableAsync(playwright);
         IList<ContestData> contestsData = await GetContestsDataFromTableAsync(playwright);
 
@@ -26,6 +27,8 @@ public class Eschome
                 contest.Arena = data.Location;
                 contest.Presenters = data.Presenters;
             }
+
+            await GetContestantsInfoAsync(playwright, year, contest.Contestants.Cast<Contestant>());
         }
     }
 
@@ -72,12 +75,21 @@ public class Eschome
         return result;
     }
 
-    private async Task<IList<ContestantData>> GetContestantsDataAsync(int year)
+    private async Task GetContestantsInfoAsync(PlaywrightScraper playwright, int year, IEnumerable<Contestant> contestants)
     {
-        using PlaywrightScraper playwright = new PlaywrightScraper();
         await GoToContestantsTableAsync(playwright, year);
+        IList<ContestantData> contestantsData = await GetContestantsFromTableAsync(playwright);
 
-        return await GetContestantsFromTableAsync(playwright);
+        foreach (Contestant contestant in contestants)
+        {
+            // In 1956 each country had 2 contestants
+            ContestantData data = contestantsData.FirstOrDefault(c => c.Country.Equals(contestant.Country, StringComparison.OrdinalIgnoreCase));
+
+            if (data != null)
+            {
+                contestant.Broadcaster = data.Broadcaster;
+            }
+        }
     }
 
     private async Task GoToContestantsTableAsync(PlaywrightScraper playwright, int year)
@@ -110,10 +122,10 @@ public class Eschome
             ContestantData contestant = new ContestantData()
             {
                 Country = await GetCountry(topRow[1]),
-                Artist = await topRow[2].InnerTextAsync(),
-                Song = await topRow[3].InnerTextAsync(),
-                Composers = (await buttomRow[2].InnerTextAsync()).Split(", "),
-                Writers = (await buttomRow[3].InnerTextAsync()).Split(", "),
+                //Artist = await topRow[2].InnerTextAsync(),
+                //Song = await topRow[3].InnerTextAsync(),
+                //Composers = (await buttomRow[2].InnerTextAsync()).Split(", "),
+                //Writers = (await buttomRow[3].InnerTextAsync()).Split(", "),
                 Broadcaster = await buttomRow[1].InnerTextAsync(),
             };
 
@@ -122,96 +134,6 @@ public class Eschome
 
         return result.ToArray();
     }
-
-
-
-
-
-
-
-    /*
-
-    public async Task<Contest[]> GetContestsAsync(int start, int end)
-    {
-        using PlaywrightScraper playwright = new PlaywrightScraper();
-        await GoToContestsTableAsync(playwright);
-
-        return await GetContestsFromTableAsync(playwright, start, end);
-    }
-
-    private async Task<Contest[]> GetContestsFromTableAsync(PlaywrightScraper playwright, int start, int end)
-    {
-        List<Contest> result = new List<Contest>();
-        IReadOnlyList<IElementHandle> rows = await playwright.Page.QuerySelectorAllAsync("#tabelle1 tbody tr");
-
-        for (int i = 0; i < rows.Count; i += 2)
-        {
-            IElementHandle top = rows[i];
-            IElementHandle buttom = rows[i + 1];
-
-            IReadOnlyList<IElementHandle> topColumns = await top.QuerySelectorAllAsync("td");
-            IReadOnlyList<IElementHandle> buttomColumns = await buttom.QuerySelectorAllAsync("td");
-
-            int year = int.Parse(await topColumns[0].InnerTextAsync());
-
-            if (start <= year && year <= end)
-            {
-                Contest contest = new Contest()
-                {
-                    Year = year,
-                    Country = await GetCountry(topColumns[2]),
-                    City = await topColumns[3].InnerTextAsync(),
-                    Arena = await topColumns[4].InnerTextAsync(),
-                    Broadcasters = new[] { await topColumns[5].InnerTextAsync() },
-                    Presenters = (await buttomColumns[4].InnerTextAsync()).Split(", "),
-                };
-
-                contest.Contestants = await GetContestantsAsync(contest.Year);
-                result.Add(contest);
-            }
-        }
-
-        return result.ToArray();
-    }
-
-    private async Task<Contestant[]> GetContestantsAsync(int year)
-    {
-        using PlaywrightScraper playwright = new PlaywrightScraper();
-        await GoToContestantsTableAsync(playwright, year);
-
-        return await GetContestantsFromTableAsync(playwright);
-    }
-
-
-
-    private async Task<Contestant[]> GetContestantsFromTableAsync(PlaywrightScraper playwright)
-    {
-        List<Contestant> result = new List<Contestant>();
-        IReadOnlyList<IElementHandle> rows = await playwright.Page.QuerySelectorAllAsync("#tabelle1 tbody tr");
-
-        for (int i = 0; i < rows.Count; i += 2)
-        {
-            IElementHandle top = rows[i];
-            IElementHandle buttom = rows[i + 1];
-
-            IReadOnlyList<IElementHandle> topRow = await top.QuerySelectorAllAsync("td");
-            IReadOnlyList<IElementHandle> buttomRow = await buttom.QuerySelectorAllAsync("td");
-
-            Contestant contestant = new Contestant()
-            {
-                Country = await GetCountry(topRow[1]),
-                Artist = await topRow[2].InnerTextAsync(),
-                Song = await topRow[3].InnerTextAsync(),
-                Composers = (await buttomRow[2].InnerTextAsync()).Split(", "),
-                Writers = (await buttomRow[3].InnerTextAsync()).Split(", "),
-                Broadcaster = await buttomRow[1].InnerTextAsync(),
-            };
-
-            result.Add(contestant);
-        }
-
-        return result.ToArray();
-    }*/
 
     private async Task<string> GetCountry(IElementHandle element)
     {

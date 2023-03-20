@@ -1,16 +1,13 @@
-﻿using EurovisionDataset.Data.Junior;
+﻿using EurovisionDataset.Data;
 using Microsoft.Playwright;
-using Lyrics = EurovisionDataset.Data.Lyrics;
 
-namespace EurovisionDataset.Scrapers.Eurovision.Junior;
+namespace EurovisionDataset.Scrapers.Junior;
 
-public class EurovisionWorld : EurovisionWorld2<Contest, Contestant>
+public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 {
     private const string CONTEST_ARENA_KEY = "location";
     private const string CONTEST_CITY_AND_COUNTRY_KEY = "city";
     private const string CONTEST_LOGO_KEY = "logo";
-
-    private const string ROUND_DATE_KEY = "date";
 
     private const string LYRICS_LANGUAGES_KEY = "language";
 
@@ -107,13 +104,17 @@ public class EurovisionWorld : EurovisionWorld2<Contest, Contestant>
 
     #region Round
 
-    protected override async Task<IReadOnlyList<Data.Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
+    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
-        return new[] {
+        (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(contestData);
+
+        return new[] 
+        {
             new Round()
             {
                 Name = "final",
-                Date = contestData.GetValueOrDefault(ROUND_DATE_KEY),
+                Date = dateTime.Date,
+                Time = dateTime.Time,
                 Performances = await GetPerformancesAsync(playwright.Page)
             }
         };
@@ -147,25 +148,12 @@ public class EurovisionWorld : EurovisionWorld2<Contest, Contestant>
 
     private async Task<Performance> GetPerformanceAsync(string[] headers, IReadOnlyList<IElementHandle> columns)
     {
-        Performance result = null;
-
-        try
+        return new Performance()
         {
-            int place = int.Parse(await columns[0].InnerTextAsync());
-            int running = int.Parse(await columns[columns.Count - 2].InnerTextAsync());
-
-            result = new Performance()
-            {
-                Running = running,
-                Place = place,
-                Scores = await GetScoresAsync(headers, columns)
-            };
-        }
-        catch(Exception e) 
-        { 
-        }
-        
-        return result;
+            Place = int.Parse(await columns[0].InnerTextAsync()),
+            Running = int.Parse(await columns[columns.Count - 2].InnerTextAsync()),
+            Scores = await GetScoresAsync(headers, columns)
+        };
     }
 
     private async Task<IReadOnlyList<Score>> GetScoresAsync(string[] headers, IReadOnlyList<IElementHandle> columns)

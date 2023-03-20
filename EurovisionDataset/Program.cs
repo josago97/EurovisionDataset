@@ -5,8 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using EurovisionDataset.Scrapers;
-using EurovisionDataset.Scrapers.Eurovision.Junior;
-using EurovisionDataset.Scrapers.Eurovision.Senior;
+using EurovisionDataset.Scrapers.Junior;
+using EurovisionDataset.Scrapers.Senior;
 
 namespace EurovisionDataset;
 

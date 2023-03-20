@@ -8,10 +8,10 @@ public static class Properties
     private const string END_ARGUMENT = "-end";
     public static int END { get; private set; } = DateTime.Now.Year;
 
-    private const string EUROVISION_SENIOR_ARGUMENT = "-s";
+    private const string EUROVISION_SENIOR_ARGUMENT = "-senior";
     public static bool EUROVISION_SENIOR { get; private set; } = false;
 
-    private const string EUROVISION_JUNIOR_ARGUMENT = "-j";
+    private const string EUROVISION_JUNIOR_ARGUMENT = "-junior";
     public static bool EUROVISION_JUNIOR { get; private set; } = false;
 
     private const string HIDE_BROWSER_ARGUMENT = "-hide";

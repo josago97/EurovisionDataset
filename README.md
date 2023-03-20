@@ -69,7 +69,8 @@ It represents the original lyrics of the song and each of the translations of th
 | Attribute | Type |  Description |  
 |---|---|---|
 | name | string | Round name (final, semifinal if the year is between 2004 and 2007, semifinal1 or semifinal2 if the year is greater than 2007  ) |
-| date | DateTime | Date and time the round took place |
+| date | string | Date when the round was held in UTC |
+| time | string | Time when the round was held in UTC |
 | performances | Performance[] | Results of the performances of the contestants in this round |
 
 ### Performance
@@ -133,7 +134,8 @@ It represents the original lyrics of the song and each of the translations of th
 | Attribute | Type |  Description |  
 |---|---|---|
 | name | string | Round name (finals only for now) |
-| date | DateTime | Date and time the round took place |
+| date | string | Date when the round was held in UTC |
+| time | string | Time when the round was held in UTC |
 | performances | Performance[] | Results of the performances of the contestants in this round |
 
 ### Performance

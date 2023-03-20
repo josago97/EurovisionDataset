@@ -6,7 +6,7 @@ using VDS.RDF.Query;
 using VDS.RDF.Writing;
 using StringWriter = VDS.RDF.Writing.StringWriter;
 
-namespace EurovisionDataset.Scrapers.Eurovision.Senior;
+namespace EurovisionDataset.Scrapers.Senior;
 
 public class EurovisionLOD
 {
@@ -68,7 +68,7 @@ public class EurovisionLOD
                     int year = int.Parse(match.Value);
 
                     IEnumerable<Contestant> contestants = contests.FirstOrDefault(c => c.Year == year)
-                        ?.Contestants?.Where(c =>
+                        ?.Contestants?.Cast<Contestant>()?.Where(c =>
                         {
                             string countryName = Utils.GetCountryName(c.Country).Replace(" ", "");
                             return countryName.Equals(country, StringComparison.OrdinalIgnoreCase);

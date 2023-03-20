@@ -1,6 +1,6 @@
 ﻿namespace EurovisionDataset.Data;
 
-public abstract class Contestant : IEquatable<Contestant>
+public class Contestant : IEquatable<Contestant>
 {
     public int Id { get; set; }
     public string Country { get; set; }
@@ -13,7 +13,6 @@ public abstract class Contestant : IEquatable<Contestant>
     public IEnumerable<string> Composers { get; set; }
     public IEnumerable<string> Lyricists { get; set; }
     public IEnumerable<string> Writers { get; set; }
-
 
     public bool Equals(Contestant other)
     {

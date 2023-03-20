@@ -33,7 +33,7 @@ public abstract class BaseScraper<TContest, TContestant>
         return result;
     }
 
-    protected abstract Task GetContestsAsync(int start, int end, List<TContest> result);
+    protected abstract Task GetContestsAsync(int start, int end, IList<TContest> result);
 
     protected virtual void InsertUnavailableData(TContest contest) { }
 
@@ -98,6 +98,9 @@ public abstract class BaseScraper<TContest, TContestant>
                 GetLogUnavailableData(CheckUnvailableData, contestant, $"Contestant {countryName}:", unavailable);
             }
         }
+
+        if (contest.Rounds.IsNullOrEmpty())
+            unavailable.Add("Rounds");
     }
 
     protected virtual void CheckUnvailableData(TContestant contestant, List<string> unavailable)
@@ -115,8 +118,21 @@ public abstract class BaseScraper<TContest, TContestant>
             unavailable.Add("Video");
     }
 
-    protected async Task GetContestsAsync<T, G>(int start, int end, List<T> contests, Func<int, Task<G>> func) where G : Contest where T : G
+    protected async Task GetContestsAsync(int start, int end, IList<TContest> contests, Func<int, Task<TContest>> func)
     {
+        for (int year = start; year <= end; year++)
+        {
+            TContest contest = await func(year);
+
+            if (contest == null)
+                Console.WriteLine($"ERROR, no contest for {year}");
+            else
+            {
+                Console.WriteLine($"Added {year}");
+                contests.Add(contest);
+            }
+        }
+        /*
         IList<T> result = await Utils.ParallelTaskFor(start, end + 1, TASKS_GROUP_SIZE, async year =>
         {
             T result = (T)await func(year);
@@ -129,7 +145,7 @@ public abstract class BaseScraper<TContest, TContestant>
             return result;
         });
 
-        contests.AddRange(result);
+        contests.AddRange(result);*/
     }
 
     protected IList<Lyrics> GetLyrics(string languages, string title, string path)
