@@ -7,7 +7,6 @@ public abstract class BaseScraper<TContest, TContestant>
     where TContestant : Contestant
 {
     private const string RESOURCES_PATH = "EurovisionDataset.Resources";
-    private const int TASKS_GROUP_SIZE = 1;
 
     protected abstract int FirstYear { get; }
 

@@ -43,21 +43,31 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
 
     public virtual async Task<TContest> GetContestAsync(int year)
     {
-        TContest result;
+        TContest result = null;
         using PlaywrightScraper playwright = new PlaywrightScraper();
         string url = GetContestPageUrl(year);
-        bool retry = false;
+        bool requestOk;
+        bool retry;
 
         do
         {
-            if (retry) await Task.Delay(TOO_MANY_REQUESTS_DELAY);
-            await LoadPageAsync(playwright, url);
-            IReadOnlyList<IElementHandle> contestantsTableRows = await GetContestantsTableRowsAsync(playwright.Page);
-            retry = contestantsTableRows.Count == 0;
+            retry = false;
+            requestOk = await LoadPageAsync(playwright, url);
+
+            if (requestOk)
+            {
+                IReadOnlyList<IElementHandle> contestantsTableRows = await GetContestantsTableRowsAsync(playwright.Page);
+                
+                if (contestantsTableRows.Count == 0)
+                {
+                    retry = true;
+                    await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+                }
+            }
         }
         while (retry);
 
-        result = await GetContestAsync(playwright, year);
+        if (requestOk) result = await GetContestAsync(playwright, year);
 
         return result;
     }
@@ -265,7 +275,7 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
         }
         while (retry);
 
-        return playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
+        return response.Ok && playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
     }
 
     protected void AddData(Dictionary<string, string> data, string key, string value)
@@ -303,15 +313,6 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
         }
 
         return (date, time);
-
-        /*
-        Regex regex = new Regex(@"[0-9]*:"); //Para quitar la hora
-        Match match = regex.Match(date);
-        if (match.Success) date = date.Substring(0, match.Index);
-        date = date.Trim();
-        if (year >= 1963) date = $"{date} 21:00 CEST";
-        */
-        //return DateTime.Parse(date);
     }
 
     #endregion

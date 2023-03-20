@@ -26,9 +26,9 @@ public class Eschome
                 contest.City = data.City;
                 contest.Arena = data.Location;
                 contest.Presenters = data.Presenters;
-            }
 
-            await GetContestantsInfoAsync(playwright, year, contest.Contestants.Cast<Contestant>());
+                await GetContestantsInfoAsync(playwright, year, contest.Contestants.Cast<Contestant>());
+            }
         }
     }
 

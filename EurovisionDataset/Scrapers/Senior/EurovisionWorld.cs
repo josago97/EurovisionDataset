@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using EurovisionDataset.Data;
+﻿using EurovisionDataset.Data;
+using EurovisionDataset.Data.Senior;
 using Microsoft.Playwright;
 using Contest = EurovisionDataset.Data.Senior.Contest;
 using Contestant = EurovisionDataset.Data.Senior.Contestant;
@@ -182,7 +182,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
     {
         (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(contestData);
 
-        if (!dateTime.Time.HasValue && year >= 1963) 
+        if (!dateTime.Time.HasValue && year >= 1963)
             dateTime.Time = new TimeOnly(19, 0);
 
         return dateTime;
@@ -198,7 +198,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
         foreach (IElementHandle row in rows)
         {
-            result.Add(await GetPerformanceAsync(row, year, contestants, scores));
+            Performance performance = await GetPerformanceAsync(row, year, contestants, scores);
+            if (performance != null) result.Add(performance);
         }
 
         return result;
@@ -227,33 +228,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
         return result;
     }
-    /*
-    private async Task<Dictionary<string, List<Score>>> GetAllScoresAsync(IPage page)
-    {
-        Dictionary<string, List<Score>> result = new Dictionary<string, List<Score>>();
-        string buttonSelector = ".scoreboard_button_div button";
-        IReadOnlyList<IElementHandle> buttons = await page.QuerySelectorAllAsync(buttonSelector);
 
-        if (buttons == null || buttons.Count <= 1)
-        {
-            await GetScoresFromScoreboardAsync(page, "total", result);
-        }
-        else
-        {
-            for (int i = 0; i < buttons.Count; i++)
-            {
-                IElementHandle button = buttons[i];
-                string scoreName = (await button.InnerTextAsync()).ToLower();
-                await button.ClickAsync();
-                await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-                await GetScoresFromScoreboardAsync(page, scoreName, result);
-                buttons = await page.QuerySelectorAllAsync(buttonSelector);
-            }
-        }
-
-        return result;
-    }
-    */
     private async Task GetScoresFromScoreboardAsync(IPage page, string scoreName, Dictionary<string, List<Score>> allScores)
     {
         string selector = "table.scoreboard_table tbody tr";
@@ -294,7 +269,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     private async Task<Performance> GetPerformanceAsync(IElementHandle row, int year, IReadOnlyList<Contestant> contestants, Dictionary<string, List<Score>> scores)
     {
-        Performance result = new Performance();
+        Performance result = null;
         string countryCode = await GetCountryCodeAsync(row);
         IReadOnlyList<IElementHandle> columns = await row.QuerySelectorAllAsync("td");
 
@@ -302,19 +277,27 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         {
             string song = (await columns[2].InnerTextAsync()).Split("\n")[0].Trim();
 
-            result.ContestantId = contestants.First(c => c.Country == countryCode
-                        && c.Song.Equals(song, StringComparison.OrdinalIgnoreCase)).Id;
-
-            result.Scores = new Score[0];
+            result = new Performance()
+            {
+                ContestantId = contestants.First(c => c.Country == countryCode
+                        && c.Song.Equals(song, StringComparison.OrdinalIgnoreCase)).Id,
+                Scores = new Score[0]
+            };
         }
-        else
+        else if (scores.ContainsKey(countryCode))
         {
-            result.ContestantId = contestants.First(c => c.Country == countryCode).Id;
-            result.Scores = scores[countryCode];
+            result = new Performance() 
+            {
+                ContestantId = contestants.First(c => c.Country == countryCode).Id,
+                Scores = scores[countryCode]
+            };
         }
 
-        result.Place = int.Parse(await columns[0].InnerTextAsync());
-        result.Running = int.Parse(await columns[columns.Count - 1].InnerTextAsync());
+        if (result != null)
+        {
+            result.Place = int.Parse(await columns[0].InnerTextAsync());
+            result.Running = int.Parse(await columns[columns.Count - 1].InnerTextAsync());
+        }
 
         return result;
     }
