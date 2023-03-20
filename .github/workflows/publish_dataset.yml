@@ -45,7 +45,7 @@ jobs:
         git config --global user.name "GitHub Actions"
         git checkout -b $DATASET_BRANCH
         ls
-        git add .
+        git add . -f
         git commit -m "Update dataset"
         git fetch
         git pull
