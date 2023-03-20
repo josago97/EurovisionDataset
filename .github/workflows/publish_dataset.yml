@@ -39,14 +39,10 @@ jobs:
     
     - name: Commit and Push Changes
       run: |
-        ls -R
         ls
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-        ls -R
-        ls
         git checkout $DATASET_BRANCH
-        ls -R
         ls
         git add -A release/$DATASET_FOLDER -f
         git commit -m "Update dataset"
