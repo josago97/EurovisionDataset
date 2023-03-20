@@ -39,7 +39,7 @@ jobs:
      # Run scrapers
     - name: Run scrapers
       working-directory: release
-      run: dotnet $PROJECT_NAME -hide -junior
+      run: dotnet EurovisionDataset -hide -junior
     
     - name: Commit and Push Changes
       run: |
