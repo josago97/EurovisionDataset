@@ -35,11 +35,18 @@ jobs:
     - name: Ver cosas
       working-directory: release
       run: ls
+      
+    - name: Ver cosas 2
+      working-directory: release
+      run: dotnet -h
+      
+    - name: Ver cosas 3
+      run: dotnet -h
 
      # Run scrapers
     - name: Run scrapers
       working-directory: release
-      run: dotnet EurovisionDataset -hide -junior
+      run: dotnet EurovisionDataset.dll -hide -junior
     
     - name: Commit and Push Changes
       run: |
