@@ -43,9 +43,12 @@ jobs:
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git checkout -b $DATASET_BRANCH
+        git rm -r
         ls
         git add -A release/$DATASET_FOLDER -f
         git commit -m "Update dataset"
+        git fetch
+        git pull
         git push origin $DATASET_BRANCH
     
     # Commit dataset to dataset branch
