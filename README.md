@@ -63,7 +63,7 @@ It represents the original lyrics of the song and each of the translations of th
 |---|---|---|
 | languages | string[] | All languages that contains the song lyrics |
 | title | string | The song title |
-| content | string | The song lyrics, paragraphs are separated by carriage returns ('\r')|
+| content | string | The song lyrics, paragraphs are separated by double line break ("\n\n")|
 
 ### Round
 | Attribute | Type |  Description |  
@@ -128,7 +128,7 @@ It represents the original lyrics of the song and each of the translations of th
 |---|---|---|
 | languages | string[] | All languages that contains the song lyrics |
 | title | string | The song title |
-| content | string | The song lyrics, paragraphs are separated by carriage returns ('\r')|
+| content | string | The song lyrics, paragraphs are separated by double line break ("\n\n")|
 
 ### Round
 | Attribute | Type |  Description |  
