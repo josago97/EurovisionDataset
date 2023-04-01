@@ -49,6 +49,7 @@ jobs:
         git add . -f
         git status
         git commit -m "Update dataset"
+        git pull origin $DATASET_BRANCH
         git push origin $DATASET_BRANCH
     
     # Commit dataset to dataset branch
