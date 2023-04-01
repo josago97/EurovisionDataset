@@ -41,6 +41,8 @@ jobs:
       run: |
         cd release/$DATASET_FOLDER
         ls
+        git branch $DATASET_BRANCH
+        git checkout $DATASET_BRANCH
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         ls
