@@ -1,4 +1,4 @@
-# ❤ Eurovision Song Contest Dataset ❤
+# ❤ Unofficial Eurovision Song Contest Dataset ❤
 This repository is a freely accessible dataset that contains information about the participants and votes of all editions of the Eurovision Song Contest and Junior Eurovision Song Contest.
 
 Every year the dataset will be updated with the results of the contest, from the first edition in 1956 to the present. For Junior Eurovision, the first edition was in 2003.

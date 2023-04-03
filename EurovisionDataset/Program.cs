@@ -24,9 +24,11 @@ public class Program
 
         Properties.ReadArguments(args);
 
+        Console.WriteLine($"Start: {Properties.START}, End: {Properties.END}");
+        Console.WriteLine("Extracting data...");
+
         await PlaywrightScraper.InitAsync(Properties.HIDE_BROWSER);
         Stopwatch stopwatch = Stopwatch.StartNew();
-        Console.WriteLine("Extracting data...");
 
         await Scrapers.EurovisionWorld.RemovePopUpAsync();
 

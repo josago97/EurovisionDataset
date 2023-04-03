@@ -66,8 +66,9 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     protected override async Task GetContestantDataAsync(IElementHandle row, IPage page, Dictionary<string, string> data)
     {
-        await GetArtistAndSongAsync(page, data);
         await GetContestantDataAsync(page, data);
+        // Sobrescribir el artista para que coincida con el del título
+        await GetArtistAndSongAsync(page, data); 
 
         AddData(data, CONTESTANT_COUNTRY_KEY, await GetCountryCodeAsync(row));
     }
