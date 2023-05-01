@@ -77,7 +77,7 @@ public class Program
         JsonSerializerOptions serializeOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true,
+            WriteIndented = Properties.JSON_INDENTED,
             TypeInfoResolver = new PolymorphicTypeResolver(),
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
