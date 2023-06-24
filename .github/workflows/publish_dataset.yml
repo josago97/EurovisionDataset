@@ -7,7 +7,7 @@ name: Publish dataset
 env:
   PROJECT_NAME: EurovisionDataset
   WORKING_DIRECTORY: release
-  DATASET_FOLDER: $WORKING_DIRECTORY/Dataset
+  DATASET_FOLDER: Dataset
   DATASET_BRANCH: dataset
 
 on:
@@ -43,7 +43,7 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: ${{ env.DATASET_BRANCH }}
-        FOLDER: ${{ env.DATASET_FOLDER }}
+        FOLDER: ${{ env.WORKING_DIRECTORY }}/${{ env.DATASET_FOLDER }}
     
     #- name: Commit and Push Changes
     #  run: |
