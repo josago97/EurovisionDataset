@@ -40,7 +40,7 @@ public class Program
         await PlaywrightScraper.DisposeAsync();
 
         Console.WriteLine("Press any key to exit...");
-        Console.ReadKey();
+        Console.Read();
     }
 
     private static void GetCountries()
