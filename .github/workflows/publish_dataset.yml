@@ -12,6 +12,11 @@ env:
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        default: '20XX.0.0'
 
 jobs:
   build:
@@ -44,6 +49,17 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: ${{ env.DATASET_BRANCH }}
         FOLDER: ${{ env.WORKING_DIRECTORY }}/${{ env.DATASET_FOLDER }}
+    
+    - name: Create release
+      run: |
+        assets=()
+        for asset in ./${{ env.WORKING_DIRECTORY }}/${{ env.DATASET_FOLDER }}/*.json; do
+          assets+=("-a" "$asset")
+        done
+        tag_name=v${{ github.event.inputs.version }}
+        hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
     
     #- name: Commit and Push Changes
     #  run: |
