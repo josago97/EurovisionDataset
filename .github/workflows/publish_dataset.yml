@@ -37,21 +37,28 @@ jobs:
       working-directory: release
       run: dotnet $PROJECT_NAME.dll -start 2022 -hide -junior
     
-    - name: Commit and Push Changes
-      run: |
-        cd release/$DATASET_FOLDER
-        ls
-        git branch $DATASET_BRANCH
-        git checkout $DATASET_BRANCH
-        git config --global user.email "actions@github.com"
-        git config --global user.name "GitHub Actions"
-        ls
-        git add . -f
-        git status
-        git commit -m "Update dataset"
-        git config pull.rebase true
-        git pull origin $DATASET_BRANCH
-        git push origin $DATASET_BRANCH
+    - name: Commit json files to dataset branch
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: $DATASET_BRANCH
+        FOLDER: release/$DATASET_FOLDER
+    
+    #- name: Commit and Push Changes
+    #  run: |
+    #    cd release/$DATASET_FOLDER
+    #    ls
+    #    git branch $DATASET_BRANCH
+     #   git checkout $DATASET_BRANCH
+      #  git config --global user.email "actions@github.com"
+       # git config --global user.name "GitHub Actions"
+        #ls
+        #git add . -f
+        #git status
+   #     git commit -m "Update dataset"
+    #    git config pull.rebase true
+     #   git pull origin $DATASET_BRANCH
+      #  git push origin $DATASET_BRANCH
     
     # Commit dataset to dataset branch
     #- name: Commit dataset to dataset branch
