@@ -35,15 +35,15 @@ jobs:
 
      # Run scrapers
     - name: Run scrapers
-      working-directory: ${{ $WORKING_DIRECTORY }}
+      working-directory: ${{ WORKING_DIRECTORY }}
       run: dotnet $PROJECT_NAME.dll -start 2022 -hide -junior
     
     - name: Commit json files to dataset branch
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: ${{ $DATASET_BRANCH }}
-        FOLDER: ${{ $DATASET_FOLDER }}
+        BRANCH: ${{ DATASET_BRANCH }}
+        FOLDER: ${{ DATASET_FOLDER }}
     
     #- name: Commit and Push Changes
     #  run: |
