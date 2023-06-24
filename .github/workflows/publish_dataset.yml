@@ -16,7 +16,7 @@ on:
       version:
         description: 'Release version'
         required: true
-        default: '20XX.0.0'
+        default: '20XX.0'
 
 jobs:
   build:
