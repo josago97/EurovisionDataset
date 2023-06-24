@@ -53,11 +53,44 @@ public class EurovisionLOD
 
     private void InsertDataToContestants(Dictionary<string, string>[] data, IList<Contest> contests)
     {
+        Contestant contestant = null;
+
         foreach (Dictionary<string, string> row in data)
         {
-            Contestant contestant = null;
+            if (!row.TryGetValue("identifier", out string identifier)) continue;
 
-            if (row.TryGetValue("identifier", out string identifier))
+            Regex regex = new Regex(@"[0-9]+");
+            Match match = regex.Match(identifier);
+
+            if (!match.Success) continue;
+
+            string country = identifier.Substring(0, match.Index);
+            int year = int.Parse(match.Value);
+
+            IEnumerable<Contestant> contestants = contests.FirstOrDefault(c => c.Year == year)
+                ?.Contestants?.Cast<Contestant>()?.Where(c =>
+                {
+                    string countryName = Utils.GetCountryName(c.Country).Replace(" ", "");
+                    return countryName.Equals(country, StringComparison.OrdinalIgnoreCase);
+                });
+
+            if (contestants.IsNullOrEmpty()) continue;
+
+            if (year == 1956)
+            {
+                string song = identifier.Substring(match.Index + match.Length);
+
+                contestant = contestants.FirstOrDefault(c =>
+                    c.Song.Replace(" ", "")
+                    .StartsWith(song, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+                contestant = contestants.FirstOrDefault();
+
+            if (contestant != null) InsertDataToContestant(row, contestant);
+
+            /*
+                if (row.TryGetValue("identifier", out string identifier))
             {
                 Regex regex = new Regex(@"[0-9]+");
                 Match match = regex.Match(identifier);
@@ -99,8 +132,23 @@ public class EurovisionLOD
 
                 if (row.TryGetValue("bpm", out string bpm) && double.TryParse(bpm, out double bpmValue))
                     contestant.Bpm = (int)Math.Round(bpmValue);
-            }
+            }*/
         }
+    }
+
+    private void InsertDataToContestant(Dictionary<string, string> data, Contestant contestant)
+    {
+        if (data.TryGetValue("key", out string key) && !string.IsNullOrEmpty(key))
+            contestant.Tone = key;
+
+        if (data.TryGetValue("scale", out string scale) && !string.IsNullOrEmpty(scale))
+        {
+            contestant.Tone += $" {scale}";
+            contestant.Tone = contestant.Tone.Trim();
+        }
+
+        if (data.TryGetValue("bpm", out string bpm) && double.TryParse(bpm, out double bpmValue))
+            contestant.Bpm = (int)Math.Round(bpmValue);
     }
 
     private Dictionary<string, string>[] GetContestData(int start, int end)

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Media;
+using System.Text;
 using System.Text.RegularExpressions;
 using EurovisionDataset.Data;
 using Microsoft.Playwright;
@@ -7,17 +9,77 @@ namespace EurovisionDataset.Scrapers;
 
 public abstract class EurovisionWorld
 {
+    protected const int DELAY_REQUEST = 800; //ms
+    protected const int TOO_MANY_REQUESTS_DELAY = 10000; //ms
     protected const string URL = "https://eurovisionworld.com";
+
+    protected abstract string ContestListUrl { get; }
 
     public static async Task RemovePopUpAsync()
     {
         using PlaywrightScraper playwright = new PlaywrightScraper();
-        await playwright.LoadPageAsync(URL, WaitUntilState.NetworkIdle);
+        await LoadPageAsync(playwright, string.Empty, WaitUntilState.NetworkIdle);
 
         string selector = "popup_follow_close";
         IElementHandle popUpElement = await playwright.Page.QuerySelectorAsync(selector);
 
         if (popUpElement != null) await popUpElement.ClickAsync();
+    }
+
+    protected async static Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url, WaitUntilState waitUntilState = WaitUntilState.DOMContentLoaded)
+    {
+        string absoluteUrl = URL + url;
+        bool retry;
+        IResponse response;
+
+        do
+        {
+            retry = false;
+            response = await playwright.LoadPageAsync(absoluteUrl, waitUntilState);
+            await Task.Delay(DELAY_REQUEST);
+
+            if (response.Status == 429) // Too Many Requests
+            {
+                retry = true;
+                await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+            }
+        }
+        while (retry);
+
+        return response.Ok && playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public async Task<int> GetLastYearAsync()
+    {
+        int result = -1;
+        using PlaywrightScraper playwright = new PlaywrightScraper();
+        await LoadPageAsync(playwright, ContestListUrl);
+
+        string contestRowsSelector = "table.table_sort tbody tr";
+        IReadOnlyList<IElementHandle> contestRows = await playwright.Page.QuerySelectorAllAsync(contestRowsSelector);
+        int index = 0;
+
+        do
+        {
+            IElementHandle contestRow = contestRows[index];
+            IReadOnlyList<IElementHandle> contestColumns = await contestRow.QuerySelectorAllAsync("td");
+            IElementHandle pointsElement = contestColumns.Last();
+            string points = (await pointsElement.InnerTextAsync()).Trim();
+            bool hasPoints = Regex.IsMatch(points, @"[0-9]+");
+
+            if (hasPoints)
+            {
+                IElementHandle yearColumn = contestColumns.First();
+                string yearAndCity = await yearColumn.InnerTextAsync();
+                result = int.Parse(yearAndCity.Substring(0, 4));
+            }
+            else
+            {
+                index++;
+            }
+        } while (result == -1);
+
+        return result;
     }
 }
 
@@ -36,13 +98,24 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     protected const string ROUND_DATETIME_KEY = "date";
 
     protected const string DATA_SEPARATOR = ", ";
-    private const int DELAY_REQUEST = 800; //ms
-    private const int TOO_MANY_REQUESTS_DELAY = 10000; //ms
 
     #region Contest
 
-    public virtual async Task<TContest> GetContestAsync(int year)
+    /*public async Task GetContestsAsync(int startYear, int endYear, IList<TContest> result)
     {
+        using PlaywrightScraper playwright = new PlaywrightScraper();
+        await LoadPageAsync(playwright, ContestListUrl);
+
+        endYear = Math.Min(endYear, await GetLastYearAsync(playwright));
+
+        for (int year = startYear; year <= endYear; year++)
+        {
+            result.Add(await GetContestAsync(playwright, year));
+        }
+    }*/
+
+    public virtual async Task<TContest> GetContestAsync(int year)
+    {/*
         TContest result = null;
         using PlaywrightScraper playwright = new PlaywrightScraper();
         string url = GetContestPageUrl(year);
@@ -69,12 +142,27 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
 
         if (requestOk) result = await GetContestAsync(playwright, year);
 
+        return result;*/
+
+
+        TContest result = new TContest() { Year = year };
+        using PlaywrightScraper playwright = new PlaywrightScraper();
+        Dictionary<string, string> data = new Dictionary<string, string>();
+
+        await LoadPageAsync(playwright, GetContestPageUrl(year));
+        await GetContestDataAsync(playwright.Page, data);
+        SetContestData(result, data);
+
+        IReadOnlyList<TContestant> contestans = await GetContestantsAsync(playwright.Page, year);
+        result.Contestants = contestans;
+        result.Rounds = await GetRoundsAsync(playwright, year, data, contestans);
+
         return result;
     }
 
     protected abstract string GetContestPageUrl(int year);
 
-    private async Task<TContest> GetContestAsync(PlaywrightScraper playwright, int year)
+    /*private async Task<TContest> GetContestAsync(PlaywrightScraper playwright, int year)
     {
         TContest result = new TContest() { Year = year };
         Dictionary<string, string> data = new Dictionary<string, string>();
@@ -87,7 +175,7 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
         result.Rounds = await GetRoundsAsync(playwright, year, data, contestans);
 
         return result;
-    }
+    }*/
 
     protected abstract Task GetContestDataAsync(IPage page, Dictionary<string, string> data);
 
@@ -151,6 +239,7 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
 
     private async Task<IPage> GoToContestantPageAsync(PlaywrightScraper playwright, IElementHandle row)
     {
+        
         IReadOnlyList<IElementHandle> links = await row.QuerySelectorAllAsync("a");
         /*string tagName = (await songLink.GetPropertyAsync("tagName")).ToString().ToLower();
         if (tagName != "a") songLink = await songLink.QuerySelectorAsync("a");*/
@@ -249,34 +338,12 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
 
     #region Round
 
-    protected abstract Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<TContestant> contestants);
+    protected abstract Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year,
+        IReadOnlyDictionary<string, string> contestData, IReadOnlyList<TContestant> contestants);
 
     #endregion
 
     #region Utils
-
-    protected async Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url)
-    {
-        string absoluteUrl = URL + url;
-        bool retry;
-        IResponse response;
-
-        do
-        {
-            retry = false;
-            response = await playwright.LoadPageAsync(absoluteUrl, WaitUntilState.DOMContentLoaded);
-            await Task.Delay(DELAY_REQUEST);
-
-            if (response.Status == 429) // Too Many Requests
-            {
-                retry = true;
-                await Task.Delay(TOO_MANY_REQUESTS_DELAY);
-            }
-        }
-        while (retry);
-
-        return response.Ok && playwright.Page.Url.Equals(absoluteUrl, StringComparison.OrdinalIgnoreCase);
-    }
 
     protected void AddData(Dictionary<string, string> data, string key, string value)
     {
@@ -292,7 +359,7 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
         return data.Replace(" and ", DATA_SEPARATOR).Split(DATA_SEPARATOR);
     }
 
-    protected (DateOnly, TimeOnly?) GetDateAndTime(Dictionary<string, string> contestData)
+    protected (DateOnly, TimeOnly?) GetDateAndTime(IReadOnlyDictionary<string, string> contestData)
     {
         string[] data = contestData[ROUND_DATETIME_KEY].Split(DATA_SEPARATOR);
         DateOnly date = DateOnly.Parse(data[0]);
@@ -302,12 +369,12 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
         {
             string timeData = data[1];
 
-            Regex endTimeRegex = new Regex(@"-.*:[0-9]+ *"); // Para quitar la hora en la que acaba el certamen
+            Regex endTimeRegex = new Regex(@"-.*:[0-9]+ *"); // To remove the time the contest ends
             timeData = endTimeRegex.Replace(timeData, "");
 
             DateTime datetimeData = DateTime.Parse(timeData.Replace("CEST", "+2")
                 .Replace("CET", "+1")
-                .Replace("UTC", ""));
+                .Replace("UTC", "+0"));
 
             time = TimeOnly.FromDateTime(datetimeData.ToUniversalTime());
         }

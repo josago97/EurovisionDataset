@@ -6,6 +6,7 @@ public class Contest
     public string Arena { get; set; }
     public string City { get; set; }
     public string Country { get; set; }
+    public string IntendedCountry { get; set; } // Original host country
     public string Slogan { get; set; }
     public string LogoUrl { get; set; }
     public string Voting { get; set; }

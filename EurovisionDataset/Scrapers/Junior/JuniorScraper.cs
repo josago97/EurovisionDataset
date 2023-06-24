@@ -6,9 +6,10 @@ public class JuniorScraper : BaseScraper<Contest, Contestant>
 {
     protected override int FirstYear => 2003;
 
+    protected override EurovisionWorld EurovisionWorld { get; } = new EurovisionWorld();
+
     protected override async Task GetContestsAsync(int start, int end, IList<Contest> result)
     {
-        EurovisionWorld eurovisionWorld = new EurovisionWorld();
-        await GetContestsAsync(start, end, result, eurovisionWorld.GetContestAsync);
+        await GetContestsAsync(start, end, result, EurovisionWorld.GetContestAsync);
     }
 }

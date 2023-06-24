@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using EurovisionDataset.Data;
+﻿using EurovisionDataset.Data;
 using Contest = EurovisionDataset.Data.Senior.Contest;
 using Contestant = EurovisionDataset.Data.Senior.Contestant;
 
@@ -8,6 +7,7 @@ namespace EurovisionDataset.Scrapers.Senior;
 public class SeniorScraper : BaseScraper<Contest, Contestant>
 {
     protected override int FirstYear => 1956;
+    protected override EurovisionWorld EurovisionWorld { get; } = new EurovisionWorld();
 
     protected override async Task GetContestsAsync(int start, int end, IList<Contest> result)
     {
@@ -18,8 +18,7 @@ public class SeniorScraper : BaseScraper<Contest, Contestant>
 
     private async Task GetContestsFromEurovisionWorld(int start, int end, IList<Contest> contests)
     {
-        EurovisionWorld eurovisionWorld = new EurovisionWorld();
-        await GetContestsAsync(start, end, contests, eurovisionWorld.GetContestAsync);
+        await GetContestsAsync(start, end, contests, EurovisionWorld.GetContestAsync);
     }
 
     private async Task GetContestsFromEschome(IList<Contest> contests)
@@ -40,6 +39,10 @@ public class SeniorScraper : BaseScraper<Contest, Contestant>
 
         switch (contest.Year)
         {
+            case 2023:
+                contest.IntendedCountry = Utils.GetCountryCode("Ukraine");
+                break;
+
             case 2022:
                 contest.LogoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Eurovision_2022_Official_Logo.jpg/250px-Eurovision_2022_Official_Logo.jpg";
                 break;

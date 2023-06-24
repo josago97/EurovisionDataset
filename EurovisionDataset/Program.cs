@@ -38,7 +38,9 @@ public class Program
 
         Console.WriteLine($"All data estracted at time: {stopwatch.Elapsed}");
         await PlaywrightScraper.DisposeAsync();
-        Console.ReadLine();
+
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
     }
 
     private static void GetCountries()

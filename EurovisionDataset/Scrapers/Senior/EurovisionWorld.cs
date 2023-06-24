@@ -1,5 +1,5 @@
-﻿using EurovisionDataset.Data;
-using EurovisionDataset.Data.Senior;
+﻿using System.Collections.ObjectModel;
+using EurovisionDataset.Data;
 using Microsoft.Playwright;
 using Contest = EurovisionDataset.Data.Senior.Contest;
 using Contestant = EurovisionDataset.Data.Senior.Contestant;
@@ -15,6 +15,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
     private const string CONTESTANT_JURY_KEY = "jury member";
     private const string CONTESTANT_SPOKESPERSON_KEY = "spokesperson";
     private const string CONTESTANT_STAGE_DIRECTOR_KEY = "stage director";
+
+    protected override string ContestListUrl => "/eurovision";
 
     #region Contest
 
@@ -53,6 +55,15 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         if (data.TryGetValue("broadcaster", out string broadcasters))
             contest.Broadcasters = broadcasters.Split(", ");
     }
+    /*
+    private async Task<string[][]> GetContestDataLinesAsync(IPage page)
+    {
+        string selector = "div.voting_info:not(.voting_info_1956)";
+        IElementHandle contestDataElement = await page.QuerySelectorAsync(selector);
+        string contestData = await contestDataElement.InnerTextAsync();
+
+        return contestData.Split("\n").Select(line => line.Split(": ")).ToArray();
+    } */
 
     #endregion
 
@@ -68,7 +79,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
     {
         await GetContestantDataAsync(page, data);
         // Sobrescribir el artista para que coincida con el del título
-        await GetArtistAndSongAsync(page, data); 
+        await GetArtistAndSongAsync(page, data);
 
         AddData(data, CONTESTANT_COUNTRY_KEY, await GetCountryCodeAsync(row));
     }
@@ -139,9 +150,11 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     #region Round
 
-    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
+    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year,
+        IReadOnlyDictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
         List<Round> result = new List<Round>();
+        Dictionary<string, string> contestDataAux = new Dictionary<string, string>();
 
         string[] roundNames = year switch
         {
@@ -158,7 +171,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
             if (playwright.Page.Url == url || await LoadPageAsync(playwright, url))
             {
-                Round round = await GetRoundAsync(playwright.Page, year, roundName, contestData, contestants);
+                await GetContestDataAsync(playwright.Page, contestDataAux);
+                Round round = await GetRoundAsync(playwright.Page, year, roundName, contestDataAux, contestants);
                 result.Add(round);
             }
         }
@@ -166,7 +180,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         return result.ToArray();
     }
 
-    private async Task<Round> GetRoundAsync(IPage page, int year, string roundName, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
+    private async Task<Round> GetRoundAsync(IPage page, int year, string roundName,
+        IReadOnlyDictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
         (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(year, contestData);
 
@@ -179,7 +194,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         };
     }
 
-    private (DateOnly, TimeOnly?) GetDateAndTime(int year, Dictionary<string, string> contestData)
+    private (DateOnly, TimeOnly?) GetDateAndTime(int year, IReadOnlyDictionary<string, string> contestData)
     {
         (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(contestData);
 
@@ -189,7 +204,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         return dateTime;
     }
 
-    private async Task<IReadOnlyList<Performance>> GetPerformancesAsync(IPage page, int year, IReadOnlyList<Contestant> contestants)
+    private async Task<IReadOnlyList<Performance>> GetPerformancesAsync(IPage page, int year,
+        IReadOnlyList<Contestant> contestants)
     {
         List<Performance> result = new List<Performance>();
 
@@ -287,7 +303,7 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
         }
         else if (scores.ContainsKey(countryCode))
         {
-            result = new Performance() 
+            result = new Performance()
             {
                 ContestantId = contestants.First(c => c.Country == countryCode).Id,
                 Scores = scores[countryCode]

@@ -25,6 +25,7 @@ It represents an annual edition.
 | arena | string | Building where the contest was held |
 | city | string | Host city |
 | country | string | Host country code |
+| intendedCountry | string | If not null stores the code of the country that should have been the host but couldn't (Ukraine 2023)
 | slogan | string | Slogan of the contest |
 | logoUrl | string | Link to contest thumbnail |
 | voting | string | Information about the voting system |

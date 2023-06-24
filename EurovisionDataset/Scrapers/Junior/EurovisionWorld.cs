@@ -11,6 +11,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     private const string LYRICS_LANGUAGES_KEY = "language";
 
+    protected override string ContestListUrl => "/junior-eurovision";
+
     #region Contest
 
     protected override string GetContestPageUrl(int year)
@@ -104,7 +106,8 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     #region Round
 
-    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year, Dictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
+    protected override async Task<IReadOnlyList<Round>> GetRoundsAsync(PlaywrightScraper playwright, int year,
+        IReadOnlyDictionary<string, string> contestData, IReadOnlyList<Contestant> contestants)
     {
         (DateOnly Date, TimeOnly? Time) dateTime = GetDateAndTime(contestData);
 

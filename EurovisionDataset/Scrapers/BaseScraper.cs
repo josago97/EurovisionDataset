@@ -9,6 +9,7 @@ public abstract class BaseScraper<TContest, TContestant>
     private const string RESOURCES_PATH = "EurovisionDataset.Resources";
 
     protected abstract int FirstYear { get; }
+    protected abstract EurovisionWorld EurovisionWorld { get; }
 
     public async Task<IEnumerable<TContest>> GetDataAsync(int start, int end)
     {
@@ -17,6 +18,7 @@ public abstract class BaseScraper<TContest, TContestant>
         if (end >= FirstYear)
         {
             start = Math.Max(start, FirstYear);
+            end = Math.Min(end, await EurovisionWorld.GetLastYearAsync());
 
             await GetContestsAsync(start, end, result);
 

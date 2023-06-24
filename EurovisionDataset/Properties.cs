@@ -24,14 +24,14 @@ public static class Properties
 
     public static void ReadArguments(string[] arguments)
     {
-        for (int i = 0; i < arguments.Length; i ++)
+        for (int i = 0; i < arguments.Length; i++)
         {
             string command = arguments[i];
 
             if (!command.StartsWith(ARGUMENT_PREFFIX))
                 throw new ArgumentException($"Arguments must start with {ARGUMENT_PREFFIX}");
 
-            switch (command.ToLower())
+            switch (command.Substring(1).ToLower())
             {
                 case START_ARGUMENT:
                     START = int.Parse(arguments[++i]);
