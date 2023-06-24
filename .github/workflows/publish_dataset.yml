@@ -6,7 +6,8 @@ name: Publish dataset
 # Declaring custom variables
 env:
   PROJECT_NAME: EurovisionDataset
-  DATASET_FOLDER: Dataset
+  WORKING_DIRECTORY: release
+  DATASET_FOLDER: $WORKING_DIRECTORY/Dataset
   DATASET_BRANCH: dataset
 
 on:
@@ -30,11 +31,11 @@ jobs:
         
     # Build project to the release-folder
     - name: Build .NET Project
-      run: dotnet build $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -o release --nologo
+      run: dotnet build $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -o $WORKING_DIRECTORY --nologo
 
      # Run scrapers
     - name: Run scrapers
-      working-directory: release
+      working-directory: $WORKING_DIRECTORY
       run: dotnet $PROJECT_NAME.dll -start 2022 -hide -junior
     
     - name: Commit json files to dataset branch
@@ -42,7 +43,7 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: $DATASET_BRANCH
-        FOLDER: release/$DATASET_FOLDER
+        FOLDER: $DATASET_FOLDER
     
     #- name: Commit and Push Changes
     #  run: |
