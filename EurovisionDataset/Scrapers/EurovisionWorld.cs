@@ -24,7 +24,7 @@ public abstract class EurovisionWorld
         if (popUpElement != null) await popUpElement.ClickAsync();
     }
 
-    protected async static Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url, WaitUntilState waitUntilState = WaitUntilState.Load)
+    protected async static Task<bool> LoadPageAsync(PlaywrightScraper playwright, string url, WaitUntilState waitUntilState = WaitUntilState.DOMContentLoaded)
     {
         string absoluteUrl = URL + url;
         bool retry;
@@ -179,10 +179,9 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
 
     private async Task<IPage> GoToContestantPageAsync(PlaywrightScraper playwright, IElementHandle row)
     {
-
         IReadOnlyList<IElementHandle> links = await row.QuerySelectorAllAsync("a");
         string url = await links[1].GetAttributeAsync("href");
-        await LoadPageAsync(playwright, url);
+        await LoadPageAsync(playwright, url, WaitUntilState.Load);
 
         return playwright.Page;
     }
