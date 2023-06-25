@@ -41,7 +41,7 @@ jobs:
      # Run scrapers
     - name: Run scrapers
       working-directory: ${{ env.WORKING_DIRECTORY }}
-      run: dotnet $PROJECT_NAME.dll -hide
+      run: dotnet $PROJECT_NAME.dll -hide -exception_no_data
     
     - name: Commit json files to dataset branch
       uses: JamesIves/github-pages-deploy-action@3.7.1
