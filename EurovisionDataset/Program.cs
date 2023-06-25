@@ -39,7 +39,7 @@ public class Program
         Console.WriteLine($"All data estracted at time: {stopwatch.Elapsed}");
         await PlaywrightScraper.DisposeAsync();
 
-        Console.WriteLine("Press any key to exit...");
+        Console.WriteLine("Press enter to exit...");
         Console.Read();
     }
 

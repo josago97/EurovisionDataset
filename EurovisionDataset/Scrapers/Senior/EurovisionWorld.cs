@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using EurovisionDataset.Data;
+﻿using EurovisionDataset.Data;
 using Microsoft.Playwright;
 using Contest = EurovisionDataset.Data.Senior.Contest;
 using Contestant = EurovisionDataset.Data.Senior.Contestant;

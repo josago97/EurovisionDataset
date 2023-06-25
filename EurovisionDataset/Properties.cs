@@ -22,6 +22,9 @@ public static class Properties
     private const string JSON_INDENTED_ARGUMENT = "json_indented";
     public static bool JSON_INDENTED { get; private set; } = false;
 
+    private const string THROW_EXCEPTION_UNAVAILABLE_DATA_ARGUMENT = "exception_no_data";
+    public static bool THROW_EXCEPTION_UNAVAILABLE_DATA { get; private set; } = false;
+
     public static void ReadArguments(string[] arguments)
     {
         for (int i = 0; i < arguments.Length; i++)
@@ -55,6 +58,10 @@ public static class Properties
 
                 case JSON_INDENTED_ARGUMENT:
                     JSON_INDENTED = true;
+                    break;
+
+                case THROW_EXCEPTION_UNAVAILABLE_DATA_ARGUMENT:
+                    THROW_EXCEPTION_UNAVAILABLE_DATA = true;
                     break;
             }
         }

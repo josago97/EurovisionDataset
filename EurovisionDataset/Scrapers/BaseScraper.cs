@@ -42,7 +42,7 @@ public abstract class BaseScraper<TContest, TContestant>
     {
         List<string> unavailable = new List<string>();
 
-        GetLogUnavailableData(CheckUnavailableData, contest, $"Unavailable of contest {contest.Year}:", unavailable);
+        GetLogUnavailableData(CheckUnavailableData, contest, $"Unavailable data of contest {contest.Year}:", unavailable);
 
         if (unavailable.Count > 0)
         {
@@ -60,6 +60,11 @@ public abstract class BaseScraper<TContest, TContestant>
             }
 
             Console.WriteLine();
+
+            if (Properties.THROW_EXCEPTION_UNAVAILABLE_DATA)
+            {
+                throw new Exception("Unavailable data");
+            }
         }
     }
 
