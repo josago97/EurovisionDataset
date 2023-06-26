@@ -22,7 +22,7 @@ jobs:
   build:
   
     # use ubuntu-latest image to run steps on
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
     # uses GitHub's checkout action to checkout code form the master branch
