@@ -47,6 +47,7 @@ public class PlaywrightScraper : IDisposable
             try
             {
                 result = await Page.GotoAsync(url, pageGotoOptions);
+                Console.WriteLine($"Ultima página visitada: {url}"); // TODO: QUITAR
             }
             catch { }
         }
