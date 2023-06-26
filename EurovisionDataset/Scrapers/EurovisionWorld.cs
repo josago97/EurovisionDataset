@@ -36,10 +36,16 @@ public abstract class EurovisionWorld
             response = await playwright.LoadPageAsync(absoluteUrl, waitUntilState);
             //await Task.Delay(DELAY_REQUEST);
 
-            if (response.Status == 429) // Too Many Requests
+            if (!response.Ok)
             {
                 retry = true;
-                await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+
+                switch (response.Status)
+                {
+                    case 429: // Too Many Requests
+                        await Task.Delay(TOO_MANY_REQUESTS_DELAY);
+                        break;
+                }
             }
         }
         while (retry);
@@ -163,16 +169,23 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     }
 
     protected async Task<TContestant> GetContestantAsync(PlaywrightScraper playwright, IElementHandle row, int year)
-    {
+    {//TODO QUITAR
+        Console.WriteLine("Empezar conseguir datos contestant");
+
         TContestant result = new TContestant();
         Dictionary<string, string> data = new Dictionary<string, string>();
         IPage page = await GoToContestantPageAsync(playwright, row);
 
+        Console.WriteLine("Cogiendo datos contestant");
         await GetContestantDataAsync(row, page, data);
         SetContestantData(result, data);
 
+        Console.WriteLine("Cogiendo letras contestant");
         result.Lyrics = await GetLyricsAsync(page, data);
+        Console.WriteLine("Cogiendo videos contestant");
         result.VideoUrls = await GetVideoUrlsAsync(page);
+
+        Console.WriteLine("Terminar conseguir datos contestant");
 
         return result;
     }
