@@ -231,21 +231,37 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     private async Task<IList<string>> GetVideoUrlsAsync(IPage page)
     {
         IList<string> result = new List<string>();
-        IElementHandle moreVideosButton = await page.QuerySelectorAsync(".lyrics_more_videos_div");
+        Console.WriteLine("Video 1 {0}", page);
+
+        IElementHandle moreVideosButton = await page.QuerySelectorAsync(".lyrics_more_videos_div button");
+
+        Console.WriteLine("Video 2 {0}", moreVideosButton);
+
         if (moreVideosButton != null) await moreVideosButton.ClickAsync();
+
+        Console.WriteLine("Video 3");
+
         IReadOnlyList<IElementHandle> videoElements = await page.QuerySelectorAllAsync(".vid_ratio iframe");
+
+        Console.WriteLine("Video 4 {0}", videoElements);
 
         if (!videoElements.IsNullOrEmpty())
         {
+            Console.WriteLine("Video 5 {0}", videoElements.Count);
+
             foreach (IElementHandle element in videoElements)
             {
+                Console.WriteLine("Video 7 {0}", element);
                 string videoUrl = await element.GetAttributeAsync("src");
-                Regex regex = new Regex(@"\?");
-                Match match = regex.Match(videoUrl);
-                if (match.Success) videoUrl = videoUrl.Substring(0, match.Index);
+                Console.WriteLine("Video 8 {0}", videoUrl);
+
+                int lastUrlIndex = videoUrl.IndexOf('?');
+                if (lastUrlIndex != -1) videoUrl = videoUrl.Substring(0, lastUrlIndex);
                 result.Add(videoUrl);
             }
         }
+
+        Console.WriteLine("Video 9");
 
         return result;
     }
