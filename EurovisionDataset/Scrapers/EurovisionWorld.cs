@@ -232,12 +232,12 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     {
         IList<string> result = new List<string>();
         Console.WriteLine("Video 1 {0}", page);
-
+        //page.ClickAsync
         IElementHandle moreVideosButton = await page.QuerySelectorAsync(".lyrics_more_videos_div button");
 
         Console.WriteLine("Video 2 {0}", moreVideosButton);
 
-        if (moreVideosButton != null) await moreVideosButton.ClickAsync();
+        if (moreVideosButton != null) await moreVideosButton.ClickAsync(new() { Force = true });
 
         Console.WriteLine("Video 3");
 
