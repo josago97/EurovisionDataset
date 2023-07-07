@@ -223,9 +223,6 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
 
     private async Task<Dictionary<string, List<Score>>> GetAllScoresAsync(IPage page)
     {
-        // TODO QUITAR
-        Console.WriteLine("Empezar score");
-
         Dictionary<string, List<Score>> result = new Dictionary<string, List<Score>>();
         string buttonSelector = ".scoreboard_button_div button";
         IReadOnlyList<ILocator> buttons = await page.Locator(buttonSelector).AllAsync();
@@ -244,8 +241,6 @@ public class EurovisionWorld : EurovisionWorld<Contest, Contestant>
                 await GetScoresFromScoreboardAsync(page, scoreName, result);
             }
         }
-
-        Console.WriteLine("Terminar score");
 
         return result;
     }

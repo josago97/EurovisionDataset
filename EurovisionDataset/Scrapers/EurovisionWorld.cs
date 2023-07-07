@@ -169,23 +169,16 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     }
 
     protected async Task<TContestant> GetContestantAsync(PlaywrightScraper playwright, IElementHandle row, int year)
-    {//TODO QUITAR
-        Console.WriteLine("Empezar conseguir datos contestant");
-
+    {
         TContestant result = new TContestant();
         Dictionary<string, string> data = new Dictionary<string, string>();
         IPage page = await GoToContestantPageAsync(playwright, row);
 
-        Console.WriteLine("Cogiendo datos contestant");
         await GetContestantDataAsync(row, page, data);
         SetContestantData(result, data);
 
-        Console.WriteLine("Cogiendo letras contestant");
         result.Lyrics = await GetLyricsAsync(page, data);
-        Console.WriteLine("Cogiendo videos contestant");
         result.VideoUrls = await GetVideoUrlsAsync(page);
-
-        Console.WriteLine("Terminar conseguir datos contestant");
 
         return result;
     }
@@ -231,37 +224,29 @@ public abstract class EurovisionWorld<TContest, TContestant> : EurovisionWorld
     private async Task<IList<string>> GetVideoUrlsAsync(IPage page)
     {
         IList<string> result = new List<string>();
-        Console.WriteLine("Video 1 {0}", page);
-        //page.ClickAsync
+
         IElementHandle moreVideosButton = await page.QuerySelectorAsync(".lyrics_more_videos_div button");
-
-        Console.WriteLine("Video 2 {0}", moreVideosButton);
-
         if (moreVideosButton != null) await moreVideosButton.ClickAsync(new() { Force = true });
 
-        Console.WriteLine("Video 3");
-
         IReadOnlyList<IElementHandle> videoElements = await page.QuerySelectorAllAsync(".vid_ratio iframe");
+        string urlAttribute = "src";
 
-        Console.WriteLine("Video 4 {0}", videoElements);
-
-        if (!videoElements.IsNullOrEmpty())
+        // When the link cannot be obtained from the videos above, it will be obtained from the videos below
+        // In github actions this case occurs in eurovision spain 1966
+        if (videoElements.Count == 0)
         {
-            Console.WriteLine("Video 5 {0}", videoElements.Count);
-
-            foreach (IElementHandle element in videoElements)
-            {
-                Console.WriteLine("Video 7 {0}", element);
-                string videoUrl = await element.GetAttributeAsync("src");
-                Console.WriteLine("Video 8 {0}", videoUrl);
-
-                int lastUrlIndex = videoUrl.IndexOf('?');
-                if (lastUrlIndex != -1) videoUrl = videoUrl.Substring(0, lastUrlIndex);
-                result.Add(videoUrl);
-            }
+            videoElements = await page.QuerySelectorAllAsync(".vid_ratio .video");
+            urlAttribute = "data-video-iframe";
         }
 
-        Console.WriteLine("Video 9");
+        foreach (IElementHandle element in videoElements)
+        {
+            string videoUrl = await element.GetAttributeAsync(urlAttribute);
+
+            int lastUrlIndex = videoUrl.IndexOf('?');
+            if (lastUrlIndex != -1) videoUrl = videoUrl.Substring(0, lastUrlIndex);
+            result.Add(videoUrl);
+        }
 
         return result;
     }

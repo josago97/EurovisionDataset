@@ -30,7 +30,7 @@ public class PlaywrightScraper : IDisposable
         if (playwright != null) playwright.Dispose();
     }
 
-    public async Task<IResponse?> LoadPageAsync(string url, WaitUntilState waitUntil = WaitUntilState.Load, int? timeout = null)
+    public async Task<IResponse> LoadPageAsync(string url, WaitUntilState waitUntil = WaitUntilState.Load, int? timeout = null)
     {
         IResponse result = null;
 
@@ -47,7 +47,6 @@ public class PlaywrightScraper : IDisposable
             try
             {
                 result = await Page.GotoAsync(url, pageGotoOptions);
-                Console.WriteLine($"Ultima página visitada: {url}"); // TODO: QUITAR
             }
             catch { }
         }
