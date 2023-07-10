@@ -6,7 +6,7 @@ Every year the dataset will be updated with the results of the contest, from the
 The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision World](https://eurovisionworld.com) and [Eurovision LOD](https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision/page/about) websites.
 
 ## Downloading the dataset
-The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the *Dataset* folder found in the main branch.
+The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the [dataset branch](https://github.com/josago97/EurovisionDataset/tree/dataset).
 
 ## Data description
 The dataset is in JSON format.
