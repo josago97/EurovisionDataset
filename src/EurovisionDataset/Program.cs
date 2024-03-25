@@ -30,19 +30,27 @@ public class Program
         Console.WriteLine("Extracting data...");
 
         await PlaywrightScraper.InitAsync(Properties.HIDE_BROWSER);
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
         await EurovisionWorld.AcceptCookiesAsync();
+        await GetDataAsync();
+        await PlaywrightScraper.DisposeAsync();
+
+        Console.WriteLine("Press enter to exit...");
+        Console.Read();
+    }
+
+    private static async Task GetDataAsync()
+    {
+        var contests = Enumerable.Range(2000, 2016).Select(x => new Entities.Senior.Contest() { Year = x }).ToArray();
+        var ogaespain = new Scrapers.Senior.Ogaespain();
+        await ogaespain.ScrapAsync(contests);
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         GetCountries();
         if (Properties.EUROVISION_JUNIOR) await GetJuniorAsync();
         if (Properties.EUROVISION_SENIOR) await GetSeniorAsync();
 
         Console.WriteLine($"All data estracted at time: {stopwatch.Elapsed}");
-        await PlaywrightScraper.DisposeAsync();
-
-        Console.WriteLine("Press enter to exit...");
-        Console.Read();
     }
 
     private static void GetCountries()

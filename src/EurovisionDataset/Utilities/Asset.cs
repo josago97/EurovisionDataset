@@ -4,7 +4,7 @@ namespace EurovisionDataset.Utilities;
 
 internal static class Asset
 {
-    private const string FILE_SYSTEM_FOLDER_PATH = "../../../assets";
+    private const string FILE_SYSTEM_FOLDER_PATH = "../../../../../assets";
     private const string EMBED_FOLDER_PATH = "EurovisionDataset.Assets";
 
     public static Stream OpenEmbedResource(string path)
