@@ -1,0 +1,67 @@
+﻿<header>
+    <div class="head">
+        <button class="go-back-button @GoBackButtonCssClass" @onclick="@Navigator.GoBackAsync">
+            <div class="go-back-button-row">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </button>
+        <img class="logo" src="images/eurovision_logo.png" />
+    </div>
+
+    <div class="navbar-toggler">
+        <input type="checkbox" id="navbar-toggler-input" @onchange="ToggleNavMenu">
+        <label id="icon-burguer" for="navbar-toggler-input">
+            <div></div>
+            <div></div>
+            <div></div>
+        </label>
+    </div>
+    
+    <div class="link-list @NavMenuCssClass">
+        <a class="link link-1" href="senior">
+            <div>Senior</div>
+        </a>
+        <a class="link link-2" href="junior">
+            <div>Junior</div>
+        </a>
+    </div>
+    
+</header>
+
+<!--<div class="navbar">
+    <div class="header">
+        <div>
+            <button class="go-back-button @GoBackButtonCssClass" @onclick="@Navigator.GoBackAsync">
+                <div class="go-back-button-row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </button>
+            <div class="title">
+                <img src="@Utils.GetStaticFileUrl("images/eurovision_logo.png")"/>
+            </div>
+        </div>
+        <div class="navbar-toggler">
+            <input type="checkbox" id="navbar-toggler-input" @onchange="ToggleNavMenu">
+            <label id="icon-burguer" for="navbar-toggler-input">
+                <div></div>
+                <div></div>
+                <div></div>
+            </label>
+        </div>
+    </div>
+
+    <div class="navbar-list @NavMenuCssClass">
+        <a class="link link-1" href="senior">
+            <div>Senior</div>
+        </a>
+        <a class="link link-2" href="junior">
+            <div>Junior</div>
+        </a>
+    </div>
+</div>
+
+-->

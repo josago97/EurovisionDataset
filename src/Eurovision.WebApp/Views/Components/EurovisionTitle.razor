@@ -1,0 +1,19 @@
+﻿<div class="eurovision-title">
+    <div class="title">
+        <span>Euro</span>
+        <img src="@($"images/heart_flags/{Country.ToLower()}.png")" />
+        <span>ision</span> 
+    </div>
+    <div class="subtitle">
+        <span>@City @Year</span>
+    </div>
+</div>
+
+@code {  
+    [Parameter]
+    public string Country { get; set; }
+    [Parameter]
+    public string City { get; set; }
+    [Parameter]
+    public int? Year { get; set; }  
+}

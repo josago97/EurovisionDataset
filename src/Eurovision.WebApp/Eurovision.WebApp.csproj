@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>annotations</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorPro.BlazorSize" Version="6.2.2" />
+    <PackageReference Include="BootstrapBlazor" Version="8.3.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
+    <PackageReference Include="Sharplus" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\data\" />
+  </ItemGroup>
+
+	<!-- Copy Eurovision data json files -->
+	<Target Name="CopyFiles" BeforeTargets="Build">
+		<ItemGroup>
+			<EurovisionFiles Include="$(SolutionDir)..\dataset\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(EurovisionFiles)" DestinationFolder="$(ProjectDir)wwwroot\data\" SkipUnchangedFiles="true"/>
+	</Target>
+
+</Project>

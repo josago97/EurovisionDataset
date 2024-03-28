@@ -1,0 +1,133 @@
+﻿@page "/senior/{Year:int}"
+@page "/junior/{Year:int}"
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using SortDirection = Microsoft.AspNetCore.Components.QuickGrid.SortDirection
+@inherits BaseEurovisionPage
+
+<div id="main">
+    <div class="title">
+        <EurovisionTitle Country="@Contest.Country" 
+            City="@Contest.City" 
+            Year="@Contest.Year"/>
+    </div>
+
+    <div class="data-container">
+        <div>
+            <div class="contest-data">
+                @if (!string.IsNullOrEmpty(Contest.DateTime))
+                {
+                    <p><span class="data-entry">Date:</span> @Contest.DateTime</p>
+                }
+                @if (!string.IsNullOrEmpty(Contest.Location))
+                {
+                    <p><span class="data-entry">Location:</span> @Contest.Location</p>
+                }
+                @if (!string.IsNullOrEmpty(Contest.Slogan))
+                {
+                    <p><span class="data-entry">Slogan:</span> @Contest.Slogan</p>
+                }
+                @if (!string.IsNullOrEmpty(Contest.Broadcasters))
+                {
+                    <p><span class="data-entry">Broadcasters:</span> @Contest.Broadcasters</p>
+                }
+                @if (!string.IsNullOrEmpty(Contest.Presenters))
+                {
+                    <p><span class="data-entry">Presenters:</span> @Contest.Presenters</p>
+                }
+                <p><span class="data-entry">Participants:</span> @Contest.Participants</p>
+                @if (!string.IsNullOrEmpty(Contest.Voting))
+                {
+                    <p><span class="data-entry">Voting:</span> @Contest.Voting</p>
+                }
+            </div>
+
+            <br/>
+
+            @if (IsCancelled)
+            {
+                <Alert Icon="fa-solid fa-triangle-exclamation fa-lg me-2" Color="Color.Danger" ShowBar="true">
+                    @CancelationMessage
+                </Alert>
+            }
+
+        </div>
+        
+
+        @if (!string.IsNullOrEmpty(Contest.LogoUrl))
+        {
+            <div class="logo">
+                <img src="@Contest.LogoUrl" alt="logo"/>
+            </div>
+        }
+    </div>
+
+    <div class="results">
+        <div class="title">@(IsCancelled ? "Participants" : "Results")</div>
+
+        @foreach (var round in Contest.Rounds)
+        {
+            @if (!IsCancelled)
+            {
+                <div class="subtitle">@round.Name</div>
+            }
+
+            <QuickGrid Items="@round.Contestants.AsQueryable()">
+                @if (round.Contestants.Any(c => c.Place.HasValue))
+                {
+                    <TemplateColumn Title=@(HasPlaceColumnSmall ? "#" : "Place")
+                        SortBy="GridSort<ContestantData>.ByAscending(c => c.Place)" 
+                        IsDefaultSort="SortDirection.Ascending"
+                        Align="Align.Center">
+                        <a class="link" href=@($"{BasePath}/{@context.Id}")>
+                            <div class="place">@context.Place</div>
+                        </a>
+                    </TemplateColumn>
+                }
+                <TemplateColumn Title="Country"
+                    SortBy="GridSort<ContestantData>.ByAscending(c => c.CountryName)" 
+                    IsDefaultSort="SortDirection.Ascending"
+                    Align="Align.Center">
+                    <a class="link" href=@($"{BasePath}/{context.Id}")>
+                        <div>
+                            <img class="flag" src="@($"/images/flags/{context.CountryCode.ToLower()}.svg")" />
+                            <div>@context.CountryName</div>
+                        </div>
+                    </a>
+                </TemplateColumn>
+                <TemplateColumn Title="Song / Artist"
+                    SortBy="GridSort<ContestantData>.ByAscending(c => c.Song)
+                        .ThenAscending(c => c.Artist)" 
+                    IsDefaultSort="SortDirection.Ascending">
+                    <a class="link" href=@($"{BasePath}/{context.Id}")>
+                        <div class="song">@context.Song</div>
+                        <div class="artist">@context.Artist</div>
+                    </a>
+                </TemplateColumn>
+                @if (round.Contestants.Any(c => c.Points.HasValue))
+                {
+                    <TemplateColumn Title=@(HasPointsColumnSmall ? "Pts" : "Points")
+                        SortBy="GridSort<ContestantData>.ByAscending(c => c.Points)" 
+                        IsDefaultSort="SortDirection.Ascending"
+                        Align="Align.Center">
+                        <a class="link" href=@($"{BasePath}/{context.Id}")>
+                            @context.Points
+                        </a>
+                    </TemplateColumn>
+                }
+                @if (round.Contestants.Any(c => c.Running.HasValue))
+                {
+                    <TemplateColumn Title=@(HasRunningColumnSmall ? "Run" : "Running")
+                        SortBy="GridSort<ContestantData>.ByAscending(c => c.Running)" 
+                        IsDefaultSort="SortDirection.Ascending"
+                        Align="Align.Center">
+                        <a class="link" href=@($"{BasePath}/{context.Id}")>
+                            @context.Running
+                        </a>
+                    </TemplateColumn>
+                }
+            </QuickGrid>
+        }
+    </div>
+
+</div>

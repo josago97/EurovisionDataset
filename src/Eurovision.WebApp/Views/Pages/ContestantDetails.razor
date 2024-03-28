@@ -1,0 +1,152 @@
+﻿@page "/senior/{Year:int}/{ContestantId:int}"
+@page "/junior/{Year:int}/{ContestantId:int}"
+@using Sharplus.System.Linq
+@inherits BaseEurovisionPage
+
+<div id="main">
+    <div class="title">
+        <EurovisionHeartFlag CountryCode="@Contestant.CountryCode"/>
+        <div>
+            <p>Eurovision @Contest.Year @Contestant.CountryName</p>
+            <p>@Contestant.Artist - "@Contestant.Song"</p>
+        </div>
+        <EurovisionHeartFlag CountryCode="@Contestant.CountryCode"/>
+    </div>
+
+    @if (Contestant.Videos.Count > 0)
+    {
+        <div class="yt-video">
+            <iframe src="@Contestant.Videos[0]" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    }
+
+    <div class="data-container">
+        <div class="contest-data">
+            <p><span class="data-entry">Song:</span> @Contestant.Song</p>
+            <p><span class="data-entry">Artist:</span> @Contestant.Artist</p>
+            @if (!string.IsNullOrEmpty(Contestant.Backings))
+            {
+                <p><span class="data-entry">Backings:</span> @Contestant.Backings</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Broadcaster))
+            {
+                <p><span class="data-entry">Broadcaster:</span> @Contestant.Broadcaster</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Commentators))
+            {
+                <p><span class="data-entry">Commentators:</span> @Contestant.Commentators</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Composers))
+            {
+                <p><span class="data-entry">Composers:</span> @Contestant.Composers</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Conductor))
+            {
+                <p><span class="data-entry">Conductor:</span> @Contestant.Conductor</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Dancers))
+            {
+                <p><span class="data-entry">Dancers:</span> @Contestant.Dancers</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Spokesperson))
+            {
+                <p><span class="data-entry">Spokesperson:</span> @Contestant.Spokesperson</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.StageDirector))
+            {
+                <p><span class="data-entry">Stage director:</span> @Contestant.StageDirector</p>
+            }
+            @if (!string.IsNullOrEmpty(Contestant.Writers))
+            {
+                <p><span class="data-entry">Writers:</span> @Contestant.Writers</p>
+            }
+            
+        </div>
+    </div>
+
+    <div class="other-data">
+        @if (Contestant.MusicSheet != null)
+        {
+            <div class="music-sheet">
+                <div class="contest-data">
+                    @if (Contestant.MusicSheet.Bpm.HasValue)
+                    {
+                        <p><span class="data-entry">Beats per minute:</span> @Contestant.MusicSheet.Bpm</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Contestant.MusicSheet.Tone))
+                    {
+                        <p><span class="data-entry">Tone:</span> @Contestant.MusicSheet.Tone</p>
+                    }
+                </div>
+
+                @Contestant.MusicSheet.ArmorMusicSheet
+            </div>
+        }
+
+        <div class="results">
+            @foreach (RoundData round in Rounds)
+            {
+                string placeClass = round.Place switch
+                {
+                    1 => "first-place",
+                    2 => "second-place",
+                    3 => "third-place",
+                    _ => ""
+                };
+
+                <div class="round-result @placeClass">
+                    <span class="name">@round.Name</span>
+                    <div>
+                        <div>
+                            <span>PLACE</span>
+                            @round.Place
+                            <small>/ @round.ContestantsCount</small>
+                        </div>
+                        <div>
+                            <span>POINTS</span>
+                            @round.Points
+                        </div>
+                    </div>
+                    <span>RUNNING ORDER: @round.Running</span>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    @if (!Contestant.Lyrics.IsNullOrEmpty())
+    {
+        string[][][] columns = GetLyricsColumns();
+        var lyricsSelected = Contestant.Lyrics[LyricsSelectedIndex];
+
+        <div class="lyrics">
+            <div class="lyrics-header">
+                <span>Lyrics</span>
+
+                <InputSelect @bind-Value="LyricsSelectedIndex">
+                    @for (int i = 0; i < Contestant.Lyrics.Count; i++)
+                    {
+                        var lyrics = Contestant.Lyrics[i];
+                        <option value="@i">@lyrics.Languages[0]</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <p class="lyrics-title">@lyricsSelected.Title</p>
+
+            <div class="lyrics-content">
+                @foreach (string[][] column in columns)
+                {
+                    <div>
+                        @foreach (string[] lines in column)
+                        {
+                            <p>
+                                @(new MarkupString(string.Join("<br />", lines)));
+                            </p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

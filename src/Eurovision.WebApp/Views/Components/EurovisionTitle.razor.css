@@ -1,0 +1,23 @@
+﻿.eurovision-title {
+    text-align: center;
+}
+
+.title {
+    font-size: 3.5em;
+    font-family: Eurovision;
+    line-height: normal;
+    word-spacing: -1em;
+}
+
+.title img {
+    position: relative;
+    bottom: 0.05em;
+    width: 1em;
+}
+
+.subtitle {
+    font-size: 1em;
+    font-family: Gotham Book;
+    font-weight: bold;
+    text-transform: uppercase;
+}

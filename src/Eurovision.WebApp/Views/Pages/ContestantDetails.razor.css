@@ -1,0 +1,155 @@
+﻿#main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title {
+    display: flex;
+    flex-flow: row;
+    gap: 1em;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.title p {
+    margin: 0;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+::deep .title img {
+    width: 6em;
+}
+
+@media (max-width: 600px) {
+    ::deep .title img {
+        display: none;
+    }
+}
+
+.yt-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9, for an aspect ratio of 1:1 change to this value to 100% */ 
+}
+
+.yt-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.other-data, .results {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.other-data {
+    flex-wrap: wrap;
+    justify-content: space-between
+}
+
+/*----------- Results -------------*/
+
+.round-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 15px;
+    box-shadow: 0 0 5px black;
+    border-radius: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.1em;
+}
+
+.round-result span {
+    font-weight: normal;
+    font-size: 90%;
+}
+
+.round-result .name {
+    display: block;
+    text-align: center;
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.round-result div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size: 1.15em;
+}
+
+.round-result div > div {
+    display: inline-block;
+    font-weight: bold;
+}
+
+.round-result div > span {
+    display: block;
+    font-size: 70%;
+    font-weight: normal;
+}
+
+.round-result div > small {
+    font-weight: normal;
+    font-size: 70%;
+}
+
+.first-place {
+    background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 25%, #8A6E2F 40%, transparent 90%), radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+    color: white;
+}
+
+.second-place {
+    background-image: radial-gradient(ellipse farthest-corner at right bottom, #D3D3D3 0%, #B0B0B0 8%, #8E8E8E 25%, #737373 40%, transparent 90%), radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #E2E2E2 8%, #C4C4C4 25%, #757575 62.5%, #757575 100%);
+    color: white;
+}
+
+.third-place {
+    background-image: radial-gradient(ellipse farthest-corner at right bottom, #CD7F32 0%, #B8722D 8%, #9C6127 25%, #804F22 40%, transparent 90%), radial-gradient(ellipse farthest-corner at left top, #A67B4B 0%, #986F45 8%, #825D3F 25%, #64492F 62.5%, #64492F 100%);
+    color: white;
+}
+
+/*---------------------------------*/
+
+.music-sheet {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.lyrics-header {
+    background-color: var(--info-box-color);
+    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lyrics-header span {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.lyrics-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.lyrics-content {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-gap: 2.5em;
+}
+
+.lyrics-content p {
+    margin: 0 0 1em 0;
+}

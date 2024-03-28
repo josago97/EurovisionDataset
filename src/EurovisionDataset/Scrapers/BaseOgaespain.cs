@@ -19,9 +19,7 @@ internal abstract class BaseOgaespain
         if (contests.Count == 0) return;
 
         Dictionary<int, string> storedLogos = GetStoredLogos();
-        //int lastYearWithLogo = FindLastYearWithLogo();
-        //int start = Math.Max(contests[0].Year, lastYearWithLogo);
-        //int end = Math.Max(contests[^1].Year, lastYearWithLogo);
+
 
         string folderPath = Asset.GetFileSystemAbsolutePath($"{LOGOS_FOLDER_PATH}/{LogosFolderName}");
         using HttpClient httpClient = new HttpClient();

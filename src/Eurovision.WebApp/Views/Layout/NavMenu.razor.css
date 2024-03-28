@@ -1,0 +1,225 @@
+header {
+    --header-size: 70px;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-auto-rows: 100%;
+    justify-content: space-between;
+    height: 70px;
+    background-color: darkblue;
+    color: white;
+}
+
+.head {
+    display: flex;
+    flex-direction: row;
+}
+
+.logo {
+    margin: auto 0;
+    height: 75%;
+}
+
+/*========== Go Back Button =========*/
+
+.go-back-button {
+    --icon-width: calc(var(--header-size) * 0.65);
+    --icon-height: calc(var(--header-size) - 10px);
+    --row-color: white;
+
+    border: 0px;
+    background-color: #ffffff55;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--icon-width);
+    height: 100%;
+    cursor: pointer;
+}
+
+.go-back-button:hover {
+    --row-color: black;
+
+    background-color: #ffffffcc;
+}
+
+.go-back-button-row {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.go-back-button-row > div {
+    --line-width: 30px;
+    --short-line-width: calc(var(--line-width) / 1.75);
+    --line-height: 5px;
+    --angle: 45deg;
+    --sin-angle: 0.707;
+    --cos-angle: 0.707;
+    --offsetX: calc(-50% * (1 - var(--cos-angle)));
+    --offsetY: calc(var(--line-height) * 1.3 - var(--short-line-width) * var(--sin-angle) / 2);/*calc(calc(var(--icon-height) - var(--line-height)) / 2 - 9px)*/;
+
+    position: relative;
+    width: var(--line-width);
+    height: var(--line-height);
+    background-color: var(--row-color);
+    border-radius: var(--line-height);
+}
+
+.go-back-button-row > div:nth-child(1), .go-back-button-row > div:nth-child(3) {
+    width: var(--short-line-width);
+}
+
+.go-back-button-row > div:nth-child(1) {
+    transform: translate(var(--offsetX), var(--offsetY)) rotate(calc(var(--angle) * -1));
+}
+
+.go-back-button-row > div:nth-child(3) {
+    transform: translate(var(--offsetX), calc(var(--offsetY) * -1)) rotate(var(--angle));
+}
+
+/*=============================================*/
+
+/*=================== Navbar Toggler ==================*/
+
+.navbar-toggler {
+    display: flex;
+    justify-content: center;
+    margin: 15px;
+    padding: 2px 10px;
+    line-height: 1;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 2px solid white;
+    border-radius: 0.2em;
+    cursor: pointer;
+}
+
+/*========== Burguer Button =========*/
+
+#icon-burguer {
+    --icon-height: calc(var(--header-size) - 50px);
+
+    position: relative;
+    margin: auto;
+    width: calc(var(--icon-height) * 1.1);
+    height: var(--icon-height);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+#icon-burguer > div {
+    --line-height: 2px;
+
+    position: relative;
+    height: var(--line-height);
+    background-color: #fff;
+    transition: 0.25s;
+    border-radius: var(--line-height);
+}
+
+/*============== Burguer Button Animation ================*/
+
+#navbar-toggler-input {
+    display: none;
+}
+
+#navbar-toggler-input:checked ~ #icon-burguer > div {
+    --offset: calc(calc(var(--icon-height) - var(--line-height)) / 2);
+}
+
+#navbar-toggler-input:checked ~ #icon-burguer > div:nth-child(1) {
+    transform: translateY(var(--offset)) rotate(45deg);
+}
+
+#navbar-toggler-input:checked ~ #icon-burguer > div:nth-child(2) {
+    opacity: 0;
+}
+
+#navbar-toggler-input:checked ~ #icon-burguer > div:nth-child(3) {
+    transform: translateY(calc(var(--offset) / -1)) rotate(-45deg);
+}
+
+/*=============================================*/
+
+/*===================== Links ======================*/
+
+.link-list {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    font-family: Eurovision;
+    font-size: 22pt;
+    grid-column: span 2;
+    z-index: 100;
+}
+
+.link {
+    --border-size: 40px;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    width: 100%;
+    height: 100%;
+    background: var(--background-color);
+    text-decoration: none;
+}
+
+.link::before {
+    content: "";
+    position: absolute;
+    border-left: var(--border-size) solid transparent;
+    border-right: 0px solid transparent;
+    border-top: var(--header-size) solid var(--background-color);
+    left: calc(var(--border-size) * -1);
+    top: 0;
+}
+
+.link:hover {
+    --background-color: #CCCCFF;
+    color: black;
+}
+
+.link-1 {
+    --background-color: #6600FF;
+}
+
+.link-2 {
+    --background-color: #9933FF;
+}
+
+.link:not(:last-of-type)::after {
+    content: "";
+    position: absolute;
+    border-right: var(--border-size) solid transparent;
+    border-left: 0px solid transparent;
+    border-bottom: var(--header-size) solid var(--background-color);
+    right: calc(var(--border-size) * -1);
+    bottom: 0;
+}
+
+.link-2 {
+    margin-left: calc(var(--border-size) - 1px);
+}
+
+.collapse {
+    display: none;
+}
+
+/*=================================================*/
+
+@media (min-width: 500px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .link-list {
+        display: flex !important;
+        grid-column: span 1;
+    }
+}
