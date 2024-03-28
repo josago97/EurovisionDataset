@@ -1,0 +1,28 @@
+﻿@page "/senior"
+@page "/junior"
+@inherits BaseEurovisionPage
+
+<div id="main">
+    <div class="title">@Title</div>
+
+    <div class="input-container">
+        <input type="text" placeholder="Search..." @oninput="@(args => Search(args.Value.ToString()))" />
+        <button class="order-button" @onclick="ChangeOrder">
+            <i class="fa-solid fa-arrow-@ContestOrderArrow" aria-hidden="true"></i> Year
+        </button>
+    </div>
+
+    <div class="contest-list">
+        @foreach (var contest in Contests)
+        {
+            <a class="link" href=@($"{BasePath}/{contest.Year}")>
+                <div class="item-card">
+                    <EurovisionTitle Country="@contest.CountryCode"
+                                     City="@contest.City"
+                                     Year="@contest.Year" />
+                </div>
+            </a>
+        }
+    </div>
+</div>
+

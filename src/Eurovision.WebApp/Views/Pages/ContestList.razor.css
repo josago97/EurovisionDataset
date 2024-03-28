@@ -1,0 +1,51 @@
+﻿#main {
+    max-width: 1200px;
+}
+
+.title {
+    margin: 20px 0;
+    font-family: Eurovision;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+
+    font-size: 1.25em; 
+}
+
+input {
+    width: 100%;
+    padding: 5px 15px 5px 15px;
+    border-radius: 100px;
+}
+
+.order-button {
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.contest-list {
+    display: grid;
+    margin: 25px 0;
+    grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+    gap: 25px;
+    justify-content: center;
+}
+
+.item-card {
+    padding: 10px;
+    background: white;
+    font-size: 1.4rem;
+    box-shadow: 0px 0px 10px black;
+    border-radius: 25px;
+}
+
+.item-card:hover {
+    cursor: pointer;
+    box-shadow: 0 0 20px darkblue;
+}
