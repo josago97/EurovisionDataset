@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="BlazorPro.BlazorSize" Version="6.2.2" />
     <PackageReference Include="BootstrapBlazor" Version="8.3.9" />
+    <PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
@@ -29,7 +30,7 @@
 		<ItemGroup>
 			<EurovisionFiles Include="$(SolutionDir)..\dataset\*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(EurovisionFiles)" DestinationFolder="$(ProjectDir)wwwroot\data\" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(EurovisionFiles)" DestinationFolder="$(ProjectDir)wwwroot\data\" SkipUnchangedFiles="true" />
 	</Target>
 
 </Project>

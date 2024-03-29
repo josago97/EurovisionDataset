@@ -115,7 +115,7 @@ public partial class ContestantDetails
 
         foreach (Lyrics lyrics in contestant.Lyrics)
         {
-            if (!string.IsNullOrEmpty(lyrics.Text))
+            if (!string.IsNullOrEmpty(lyrics.Content))
             {
                 if (string.IsNullOrEmpty(lyrics.Title)) lyrics.Title = contestant.Song;
                 result.Add(lyrics);
@@ -164,7 +164,7 @@ public partial class ContestantDetails
     {
         string[][][] result = new string[LYRICS_COLUMNS][][];
 
-        string lyrics = Contestant.Lyrics[LyricsSelectedIndex].Text;
+        string lyrics = Contestant.Lyrics[LyricsSelectedIndex].Content;
         string[] paragraphGroups = lyrics.Split("\n\n");
         string[][] paragraphs = paragraphGroups.Select(s => s.Split('\n')).ToArray();
 

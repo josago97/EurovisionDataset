@@ -4,24 +4,36 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eurovision.WebApp</title>
+    <title>Eurovision</title>
     <base href="/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="Eurovision.WebApp.styles.css" rel="stylesheet" />
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+
+    <!-- External libraries -->
+    <link rel="stylesheet" href="_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" />
+
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" media="only screen and (min-width: 800px)" href="/css/app_desktop.css" />
+    <link rel="stylesheet" media="only screen and (min-width: 500px) and (max-width: 799.9px)" href="css/app_tablet.css" />
+    <link rel="stylesheet" media="only screen and (max-width: 499.9px)" href="css/app_mobile.css" />
+    <link rel="stylesheet" href="Eurovision.WebApp.styles.css" />
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="loading-container">
+            <img src="./images/eurovision_logo.png" />
+            <div class="progress-container">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
+                </div>
+                <div class="loading-progress-text"></div>
+            </div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
@@ -29,8 +41,25 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <!-- Enable smooth scroll behaviour when back -->
+    <script>
+        navigation.addEventListener('navigate', (event) => {
+            console.log(event);
+
+            if (event.navigationType && event.navigationType === "push") {
+                document.documentElement.style.scrollBehavior = 'auto';
+            } else {
+                document.documentElement.style.scrollBehavior = '';
+            }
+        });
+    </script>
+
 </body>
 
 </html>

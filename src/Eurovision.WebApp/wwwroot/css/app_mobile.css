@@ -1,0 +1,7 @@
+﻿html {
+    font-size: clamp(60%, 3vw, 85%);
+}
+
+#main {
+    margin: 10px;
+}

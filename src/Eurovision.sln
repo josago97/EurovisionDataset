@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eurovision.Dataset", "EurovisionDataset\Eurovision.Dataset.csproj", "{D23376A3-F0E9-459B-9587-263D7A163113}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eurovision.WebApp", "Eurovision.WebApp\Eurovision.WebApp.csproj", "{D3823898-1940-467F-9AA9-D8B6CEDFEEDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eurovision.WebApp", "Eurovision.WebApp\Eurovision.WebApp.csproj", "{D3823898-1940-467F-9AA9-D8B6CEDFEEDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

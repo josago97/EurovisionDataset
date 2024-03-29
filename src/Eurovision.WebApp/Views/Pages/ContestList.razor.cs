@@ -41,7 +41,7 @@ public partial class ContestList
         for (int i = 0; i < contests.Count; i++)
         {
             Contest contest = contests[i];
-            string countryCode = contest.HostCountry;
+            string countryCode = contest.IntendedCountry;
 
             result.Add(new ContestData()
             {

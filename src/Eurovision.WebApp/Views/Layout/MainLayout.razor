@@ -3,28 +3,31 @@
 @inherits LayoutComponentBase
 
 <MediaQueryList>
-    <NavMenu />
-    <main>
-        @if (@Ready)
-        {
+    @if (Ready)
+    {
+        <NavMenu />
+        <main>
             @Body
-        }
-        else
-        {
+        </main>
+    }
+    else
+    {
+        <main>
             <div class="loading-container">
                 <img src="images/eurovision_logo.png" />
                 <div class="progress-container">
                     <span class="spinner"></span>
                 </div>
             </div>
-        }
-    </main>
+        </main>
+    }
 </MediaQueryList>
 
 @code {
 
     [Inject]
     public IRepository Repository { get; set; }
+
     private bool Ready { get; set; }
 
     protected override async Task OnInitializedAsync()

@@ -80,7 +80,7 @@ public partial class ContestDetails : IDisposable
         {
             Year = contest.Year,
             DateTime = GetDateTime(contest.Rounds),
-            Country = contest.HostCountry,
+            Country = contest.IntendedCountry,
             City = contest.City,
             Location = GetLocation(contest),
             Slogan = contest.Slogan,

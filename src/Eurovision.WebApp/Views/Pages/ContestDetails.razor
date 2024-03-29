@@ -3,7 +3,7 @@
 @using BootstrapBlazor.Components
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using SortDirection = Microsoft.AspNetCore.Components.QuickGrid.SortDirection
-@inherits BaseEurovisionPage
+@inherits BasePage
 
 <div id="main">
     <div class="title">
@@ -65,7 +65,7 @@
     <div class="results">
         <div class="title">@(IsCancelled ? "Participants" : "Results")</div>
 
-        @foreach (var round in Contest.Rounds)
+        @foreach (RoundData round in Contest.Rounds)
         {
             @if (!IsCancelled)
             {
@@ -77,16 +77,16 @@
                 {
                     <TemplateColumn Title=@(HasPlaceColumnSmall ? "#" : "Place")
                         SortBy="GridSort<ContestantData>.ByAscending(c => c.Place)" 
-                        IsDefaultSort="SortDirection.Ascending"
+                        InitialSortDirection ="SortDirection.Ascending"
                         Align="Align.Center">
-                        <a class="link" href=@($"{BasePath}/{@context.Id}")>
+                        <a class="link" href=@($"{BasePath}/{context.Id}")>
                             <div class="place">@context.Place</div>
                         </a>
                     </TemplateColumn>
                 }
                 <TemplateColumn Title="Country"
                     SortBy="GridSort<ContestantData>.ByAscending(c => c.CountryName)" 
-                    IsDefaultSort="SortDirection.Ascending"
+                    InitialSortDirection="SortDirection.Ascending"
                     Align="Align.Center">
                     <a class="link" href=@($"{BasePath}/{context.Id}")>
                         <div>
@@ -98,7 +98,7 @@
                 <TemplateColumn Title="Song / Artist"
                     SortBy="GridSort<ContestantData>.ByAscending(c => c.Song)
                         .ThenAscending(c => c.Artist)" 
-                    IsDefaultSort="SortDirection.Ascending">
+                    InitialSortDirection="SortDirection.Ascending">
                     <a class="link" href=@($"{BasePath}/{context.Id}")>
                         <div class="song">@context.Song</div>
                         <div class="artist">@context.Artist</div>
@@ -108,7 +108,7 @@
                 {
                     <TemplateColumn Title=@(HasPointsColumnSmall ? "Pts" : "Points")
                         SortBy="GridSort<ContestantData>.ByAscending(c => c.Points)" 
-                        IsDefaultSort="SortDirection.Ascending"
+                        InitialSortDirection="SortDirection.Ascending"
                         Align="Align.Center">
                         <a class="link" href=@($"{BasePath}/{context.Id}")>
                             @context.Points
@@ -119,7 +119,7 @@
                 {
                     <TemplateColumn Title=@(HasRunningColumnSmall ? "Run" : "Running")
                         SortBy="GridSort<ContestantData>.ByAscending(c => c.Running)" 
-                        IsDefaultSort="SortDirection.Ascending"
+                        InitialSortDirection="SortDirection.Ascending"
                         Align="Align.Center">
                         <a class="link" href=@($"{BasePath}/{context.Id}")>
                             @context.Running

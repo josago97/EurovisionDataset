@@ -18,6 +18,9 @@ public class Program
         builder.Services.AddSingleton<Navigator>();
         builder.Services.AddSingleton<IRepository, Repository>();
 
+        // Blazor booststrap
+        builder.Services.AddBootstrapBlazor();
+
         // BlazorPro.BlazorSize
         builder.Services.AddMediaQueryService();
         builder.Services.AddResizeListener();

@@ -1,5 +1,7 @@
 header {
     --header-size: 70px;
+    position:sticky;
+    top: 0;
     display: grid;
     grid-template-columns: repeat(2, auto);
     grid-auto-rows: 100%;
@@ -7,6 +9,7 @@ header {
     height: 70px;
     background-color: darkblue;
     color: white;
+    z-index: 100;
 }
 
 .head {

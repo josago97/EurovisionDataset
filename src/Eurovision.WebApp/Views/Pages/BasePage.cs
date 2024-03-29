@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Routing;
 
 namespace Eurovision.WebApp.Views.Pages;
 
-public abstract class BaseEurovisionPage : ComponentBase, IDisposable
+public abstract class BasePage : ComponentBase, IDisposable
 {
     protected enum PageType { Junior, Senior }
 
@@ -47,9 +47,6 @@ public abstract class BaseEurovisionPage : ComponentBase, IDisposable
 
         if (PagePath != pagePath)
         {
-            BasePath = basePath;
-            PagePath = pagePath;
-
             switch (pagePath)
             {
                 case "junior":
@@ -62,6 +59,9 @@ public abstract class BaseEurovisionPage : ComponentBase, IDisposable
                     Contests = Repository.SeniorContests;
                     break;
             }
+
+            BasePath = basePath;
+            PagePath = pagePath;
         }
     }
 

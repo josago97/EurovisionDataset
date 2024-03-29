@@ -1,9 +1,9 @@
 ﻿@page "/"
-@inject NavigationManager Navigation
-
-<PageTitle>Index</PageTitle>
 
 @code {
+    [Inject]
+    private NavigationManager Navigation { get; init; }
+
     protected override void OnInitialized()
     {
         Navigation.NavigateTo("senior");
