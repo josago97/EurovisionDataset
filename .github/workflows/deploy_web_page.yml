@@ -9,9 +9,6 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
 
 on: 
-  push: 
-    branches:
-      - main
   workflow_dispatch:
   
 jobs:
@@ -34,7 +31,7 @@ jobs:
         
      # Install wasm-tools
     - name: Install wasm-tools
-      run: dotnet workload install wasm-tools-net8
+      run: dotnet workload install wasm-tools
 
     # publishes Blazor project to the release-folder
     - name: Publish .NET Project
