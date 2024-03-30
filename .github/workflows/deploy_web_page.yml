@@ -1,0 +1,95 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Deploy web page
+
+# Declaring custom variables
+env:
+  PROJECT_NAME: Eurovision.WebApp
+  REPO_NAME: ${{ github.event.repository.name }}
+
+on: 
+  push: 
+    branches:
+      - main
+  workflow_dispatch:
+  
+jobs:
+  deploy-to-github-pages:
+    # use ubuntu-latest image to run steps on
+    runs-on: ubuntu-latest
+    steps:
+    # uses GitHub's checkout action to checkout code form the master branch
+    - uses: actions/checkout@v4
+
+    # Go to code folder
+    - name: Go to code folder
+      run: cd src
+    
+    # sets up .NET SDK
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.X
+        
+     # Install wasm-tools
+    - name: Install wasm-tools
+      run: dotnet workload install wasm-tools-net8
+
+    # publishes Blazor project to the release-folder
+    - name: Publish .NET Project
+      run: dotnet publish $PROJECT_NAME/$PROJECT_NAME.csproj -c Release -p:RunAOTCompilation=true -o release --nologo
+      
+     # change base tag in all html files to include subfolder
+    - name: Change base tag
+      working-directory: release/wwwroot
+      run: |
+        find . -name "*.html" | while read htmlFile; do
+            sed -i 's/<base href="\/"/<base href="\/${{ env.REPO_NAME }}\/"/g' $htmlFile
+        done
+  
+      # Fix integrity errors
+    - name: Fix service-worker-assets.js hashes
+      working-directory: release/wwwroot
+      run: |
+        jsFile=$(<service-worker-assets.js)
+        # remove JavaScript from contents so it can be interpreted as JSON
+        json=$(echo "$jsFile" | sed "s/self.assetsManifest = //g" | sed "s/;//g")
+        # grab the assets JSON array
+        assets=$(echo "$json" | jq '.assets[]' -c)
+        for asset in $assets
+        do
+          oldHash=$(echo "$asset" | jq '.hash')
+          #remove leading and trailing quotes
+          oldHash="${oldHash:1:-1}"
+          path=$(echo "$asset" | jq '.url')
+          #remove leading and trailing quotes
+          path="${path:1:-1}"
+          newHash="sha256-$(openssl dgst -sha256 -binary $path | openssl base64 -A)"
+          
+          if [ $oldHash != $newHash ]; then
+            # escape slashes for json
+            oldHash=$(echo "$oldHash" | sed 's;/;\\/;g')
+            newHash=$(echo "$newHash" | sed 's;/;\\/;g')
+            echo "Updating hash for $path from $oldHash to $newHash"
+            # escape slashes second time for sed
+            oldHash=$(echo "$oldHash" | sed 's;/;\\/;g')
+            jsFile=$(echo -n "$jsFile" | sed "s;$oldHash;$newHash;g")
+          fi
+        done
+        echo -n "$jsFile" > service-worker-assets.js
+    
+    # copy index.html to 404.html to serve the same file when a file is not found
+    - name: copy index.html to 404.html
+      run: cp release/wwwroot/index.html release/wwwroot/404.html
+
+    # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
+    - name: Add .nojekyll file
+      run: touch release/wwwroot/.nojekyll
+      
+    - name: Commit wwwroot to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: release/wwwroot
