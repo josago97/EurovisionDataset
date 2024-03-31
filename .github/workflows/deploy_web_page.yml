@@ -10,7 +10,15 @@ env:
 
 on: 
   workflow_dispatch:
-  
+  branches:
+    - main
+  paths:
+    - 'src/${{ env.PROJECT_NAME }}/**
+
+defaults:
+ run:
+  working-directory: ./src
+
 jobs:
   deploy-to-github-pages:
     # use ubuntu-latest image to run steps on
