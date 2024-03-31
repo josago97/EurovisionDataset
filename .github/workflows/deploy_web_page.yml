@@ -8,13 +8,13 @@ env:
   PROJECT_NAME: Eurovision.WebApp
   REPO_NAME: ${{ github.event.repository.name }}
 
-on: 
+on:
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - 'src/${{ env.PROJECT_NAME }}/**
+      - 'src/${{ env.PROJECT_NAME }}/**'
 
 defaults:
  run:
