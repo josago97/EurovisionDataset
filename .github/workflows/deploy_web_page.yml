@@ -14,7 +14,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/${{ env.PROJECT_NAME }}/**'
+      - 'src/Eurovision.WebApp/**'
 
 defaults:
  run:
