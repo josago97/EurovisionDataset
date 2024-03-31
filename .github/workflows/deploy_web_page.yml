@@ -27,10 +27,6 @@ jobs:
     steps:
     # uses GitHub's checkout action to checkout code form the master branch
     - uses: actions/checkout@v4
-
-    # Go to code folder
-    - name: Go to code folder
-      run: cd src
     
     # sets up .NET SDK
     - name: Setup .NET SDK
