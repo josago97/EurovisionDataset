@@ -14,7 +14,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/Eurovision.WebApp/**'
+      - src/Eurovision.WebApp/**
 
 defaults:
  run:
