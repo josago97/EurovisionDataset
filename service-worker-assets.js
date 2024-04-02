@@ -13,7 +13,7 @@
       "url": "css\/app_tablet.css"
     },
     {
-      "hash": "sha256-RBPAq8UKqnbeDrf\/+5NUiiIlUAFjhjWVUvpKNlZbrPo=",
+      "hash": "sha256-WnShrF5Lvjbm5vttJ5rwIcbjMVFdRA0Yq84WJ4vY2N4=",
       "url": "css\/app.css"
     },
     {
@@ -537,7 +537,7 @@
       "url": "images\/heart_flags\/yu.png"
     },
     {
-      "hash": "sha256-iz2v6nisZZyxONwtLrOoNgI5uHoF85+xOUkyGdwv0b8=",
+      "hash": "sha256-mhGGEp61HMOCuvE1bxEsblsxiJltccOdLxYlT4s88jw=",
       "url": "index.html"
     },
     {
@@ -573,7 +573,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-7vO9YGjsVvzgVo79j+HDObotyICjK7KBAs1gwg+6teQ=",
+      "hash": "sha256-RmOrlpvzqnB+xc3jtal1yyLp53bVC3Ua6OpoJkFwHSM=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -581,7 +581,7 @@
       "url": "_framework\/dotnet.native.8.0.3.5zshrhvpw1.js"
     },
     {
-      "hash": "sha256-Js4vVlq8F9eGii\/7DACidxTiM2egEGkt\/8u9tKNQbYA=",
+      "hash": "sha256-AxU\/vO40iedLLl4Os10prs9krKQ5lfHSSJeb3TQRrS4=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -597,7 +597,7 @@
       "url": "_framework\/BootstrapBlazor.wasm"
     },
     {
-      "hash": "sha256-XRBI1A60b6cMNH8ECCj2sd7l+eGpvxCHoYCsRqwBgdg=",
+      "hash": "sha256-nV2lbmZmQioR\/zPNaj4dKdkXpLif2ajmlK6R1QFhh30=",
       "url": "_framework\/Eurovision.WebApp.wasm"
     },
     {
@@ -1321,5 +1321,5 @@
       "url": "_content\/Microsoft.AspNetCore.Components.QuickGrid\/Microsoft.AspNetCore.Components.QuickGrid.bundle.scp.css"
     }
   ],
-  "version": "K\/Hv78nQ"
+  "version": "2yyvkIAx"
 };

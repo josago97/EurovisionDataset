@@ -174,16 +174,8 @@ select:hover {
 
 /*----------- Loading ---------------*/
 
-.loading-container .progress-container {
-    display: grid;
-    grid-template-columns: auto max-content;
-    grid-gap: 1rem;
-    align-items: center;
-    width: 50%;
-}
-
 .loading-container .progress {
-    width: 100%;
+    width: 80%;
     height: 1rem;
     border-radius: 10px;
 }
