@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Eurovision.WebApp",
   "resources": {
-    "hash": "sha256-Vc53eweJS3lDs1Id14czRv4ex7h0PzxXNoYO4958FrQ=",
+    "hash": "sha256-d1QRMbwrbxxX+m6EFqzwW49PxwrIwZhYVPn1KkGhqvQ=",
     "jsModuleNative": {
       "dotnet.native.8.0.4.5zshrhvpw1.js": "sha256-D6UNrhsZ7sDsTrHxcBobQY34NHI7+mF/GKfdHKaxgB8="
     },
@@ -9,7 +9,7 @@
       "dotnet.runtime.8.0.4.17vw47cxz6.js": "sha256-JeVsECOqOie/Pe89n9PJNJaMmb5vJsAAxfXY8INN64A="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-he1jCe6CNR8QD+VOP+xUK7SMe4EhDc+cWcK5fVHJX/Y="
+      "dotnet.native.wasm": "sha256-Hn2+THnH3l4d0F8Ls7I2HqAYwrlLJtzxvlcX0WgTQMY="
     },
     "icu": {
       "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -20,7 +20,7 @@
       "BlazorPro.BlazorSize.wasm": "sha256-5hc1RpOB0CA7QwuOTNOYX3seo6QPgQ5OAh2+07pMIkI=",
       "BootstrapBlazor.FontAwesome.wasm": "sha256-fNguMmGLs8BdMmzyb0n/RzcJkUbMB+IY5TLUyun6rWc=",
       "BootstrapBlazor.wasm": "sha256-oBgYEqc4/n7cWMdCX5TgpkE03ETw7aRBpH8lUYCo7H4=",
-      "Eurovision.WebApp.wasm": "sha256-EJbSxh+H/mPCRuGU1VE/NO+BuBZWZt4/JuVfy8OhdDI=",
+      "Eurovision.WebApp.wasm": "sha256-RGzFctD0EUwFouHUx054u6wo2UQpRSKZzA2foP5ywO4=",
       "Microsoft.AspNetCore.Authorization.wasm": "sha256-7JsgRtQ8aWGq/riVw3ScA5S/QoyIcigmulqaEFlPiP8=",
       "Microsoft.AspNetCore.Components.Authorization.wasm": "sha256-uRmx8L2/AejwTJtu28ehgGmLxZ8IeZ02hO0SzviSArc=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-L1ABK9DlELI/UY4fi28qAI8YFC0/jtyhuyre2/4gUfM=",
