@@ -14,7 +14,6 @@
     display: flex;
     flex-direction: row;
     gap: 0.5em;
-
     font-size: 1.25em; 
 }
 
@@ -31,13 +30,14 @@ input {
 
 .contest-list {
     display: grid;
-    margin: 25px 0;
-    grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    margin: 25px 0;    
     gap: 25px;
     justify-content: center;
 }
 
 .item-card {
+    display: block;
     padding: 10px;
     background: white;
     font-size: 1.4rem;

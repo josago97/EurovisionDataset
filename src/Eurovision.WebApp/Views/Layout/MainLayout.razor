@@ -14,7 +14,7 @@
     {
         <main>
             <div class="loading-container">
-                <img src="images/eurovision_logo.png" />
+                <img src="./images/eurovision_logo.png" />
                 <div >
                     <span class="spinner"></span>
                 </div>
@@ -30,9 +30,13 @@
 
     private bool Ready { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Repository.InitAsync();
-        Ready = true;
+        if (firstRender)
+        {
+            await Repository.InitAsync();
+            Ready = true;
+            StateHasChanged();
+        }
     }
 }

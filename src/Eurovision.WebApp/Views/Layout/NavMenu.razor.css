@@ -61,7 +61,7 @@ header {
     --sin-angle: 0.707;
     --cos-angle: 0.707;
     --offsetX: calc(-50% * (1 - var(--cos-angle)));
-    --offsetY: calc(var(--line-height) * 1.3 - var(--short-line-width) * var(--sin-angle) / 2);/*calc(calc(var(--icon-height) - var(--line-height)) / 2 - 9px)*/;
+    --offsetY: calc(var(--line-height) * 1.3 - var(--short-line-width) * var(--sin-angle) / 2);
 
     position: relative;
     width: var(--line-width);
@@ -202,6 +202,10 @@ header {
 /*=================================================*/
 
 @media (min-width: 500px) {
+    header {
+        overflow: hidden;
+    }
+
     .navbar-toggler {
         display: none;
     }

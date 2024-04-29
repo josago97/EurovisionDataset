@@ -15,12 +15,10 @@
     <div class="contest-list" >
         @foreach (ContestData contest in Contests)
         {
-            <a class="link" href=@($"{BasePath}/{contest.Year}")>
-                <div class="item-card">
-                    <EurovisionTitle Country="@contest.CountryCode"
-                                     City="@contest.City"
-                                     Year="@contest.Year" />
-                </div>
+            <a class="link item-card" href=@($"{BasePath}/{contest.Year}")>
+                <EurovisionTitle Country="@contest.CountryCode"
+                                 City="@contest.City"
+                                 Year="@contest.Year" />
             </a>
         }
     </div>
