@@ -1,7 +1,12 @@
-﻿import "./browser.js?v=8.3.9"
-import { execute } from "./ajax.js?v=8.3.9"
+﻿import "./browser.js"
+import { execute } from "./ajax.js"
 
 export async function ping(url, invoke, method) {
+    const data = await getClientInfo(url);
+    await invoke.invokeMethodAsync(method, data)
+}
+
+export async function getClientInfo(url) {
     const info = browser()
     let data = {
         browser: info.browser + ' ' + info.version,
@@ -20,5 +25,5 @@ export async function ping(url, invoke, method) {
         data.ip = result.Ip;
         data.id = result.Id;
     }
-    await invoke.invokeMethodAsync(method, data)
+    return data;
 }

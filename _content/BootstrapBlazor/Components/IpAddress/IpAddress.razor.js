@@ -1,5 +1,5 @@
-﻿import Data from "../../modules/data.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
+﻿import Data from "../../modules/data.js"
+import EventHandler from "../../modules/event-handler.js"
 
 const selectCell = (el, index) => {
     if (index === -1) {

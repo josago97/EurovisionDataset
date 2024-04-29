@@ -940,8 +940,7 @@ a, a:hover, a:focus {
   display: flex;
   align-items: center;
 }
-.card-header .card-collapse-arrow:not(.mdi),
-.card-header .card-collapse-arrow.mdi:before {
+.card-header .card-collapse-arrow {
   transition: transform 0.3s linear;
 }
 .card-header .card-collapse-bar {
@@ -969,8 +968,7 @@ a, a:hover, a:focus {
   box-shadow: var(--bb-card-hover-shadow);
 }
 
-[aria-expanded=true] > .card-collapse-arrow:not(.mdi),
-[aria-expanded=true] > .card-collapse-arrow.mdi:before {
+[aria-expanded=true] > .card-collapse-arrow {
   transform: rotate(90deg);
 }
 
@@ -1941,7 +1939,7 @@ a, a:hover, a:focus {
 .picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td .cell:has(.bb-picker-body-lunar-text):hover .bb-picker-body-lunar-text {
   color: var(--bb-picker-panel-today-color);
 }
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td .cell span.is-holiday {
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td .cell span.is-holiday, .picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td .cell span.is-workday {
   background-color: #c0c4cc;
   color: var(--bb-picker-panel-today-color);
   height: 14px;
@@ -1973,33 +1971,39 @@ a, a:hover, a:focus {
   top: 3px;
   left: -3.5px;
 }
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled):not(.current) .cell.is-solar-term:not(:hover) .bb-picker-body-lunar-text {
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled):not(.current):not(.start):not(.end):not(.range) .cell.is-solar-term:not(:hover) .bb-picker-body-lunar-text {
   color: var(--bs-success);
 }
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled):not(.current) .cell.is-festival:not(:hover) .bb-picker-body-lunar-text {
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled):not(.current):not(.start):not(.end):not(.range) .cell.is-festival:not(:hover) .bb-picker-body-lunar-text {
   color: var(--bs-info);
 }
 .picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled) .cell span.is-holiday {
   background-color: var(--bs-danger);
 }
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range div {
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td:not(.next-month):not(.prev-month):not(.disabled) .cell span.is-workday {
+  background-color: var(--bs-black);
+}
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range {
+  position: relative;
+}
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.start:before {
+  border-top-left-radius: 40%;
+  border-bottom-left-radius: 40%;
+  left: 6px;
+}
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.end:before {
+  border-top-right-radius: 40%;
+  border-bottom-right-radius: 40%;
+  right: 6px;
+}
+.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range:before {
+  content: "";
+  position: absolute;
   background-color: #f2f6fc;
-}
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.start div {
-  margin-left: 5px;
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-}
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.start div .cell {
-  margin-left: 4px;
-}
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.end div {
-  margin-right: 5px;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-}
-.picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.end div .cell {
-  margin-right: 4px;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  right: 0;
 }
 .picker-panel .picker-panel-body .picker-panel-body-main .picker-panel-content table td.disabled .cell {
   cursor: not-allowed;
@@ -2216,6 +2220,21 @@ a, a:hover, a:focus {
 }
 .range-panel-body .date-picker-header-label:hover {
   color: inherit;
+}
+
+.is-lunar .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range:before {
+  top: 8px;
+  bottom: -7px;
+}
+.is-lunar .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.start:before {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  left: 0;
+}
+.is-lunar .picker-panel-body .picker-panel-body-main .picker-panel-content table td.range.end:before {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  right: 0;
 }
 
 .form-label + .datetime-range {
@@ -2676,6 +2695,21 @@ section > h2 {
 }
 .widget .dropdown-item:nth-of-type(odd) {
   background-color: var(--bb-widget-item-odd-bg);
+}
+
+.bb-editor {
+  position: relative;
+}
+.bb-editor .ef-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bs-body-bg);
+}
+.bb-editor .bb-editor-footer {
+  margin-top: 1rem;
 }
 
 .empty {
@@ -6334,11 +6368,14 @@ body:before {
   --bb-tabs-header-vertical-min-width: 126px;
   display: flex;
   flex-flow: column;
-}
-
-.tabs,
-.tabs-body-content {
   height: 100%;
+}
+.tabs .tabs-body-content {
+  background-color: var(--bs-body-bg);
+}
+.tabs .tabs-body-content.bb-fs-open {
+  padding: var(--bb-tabs-body-padding);
+  overflow: auto;
 }
 
 .tabs-header {

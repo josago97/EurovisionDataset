@@ -1,5 +1,5 @@
-﻿import Data from "./data.js?v=8.3.9"
-import EventHandler from "./event-handler.js?v=8.3.9"
+﻿import Data from "./data.js"
+import EventHandler from "./event-handler.js"
 
 export function init(id, invoke, callback) {
     const resp = {

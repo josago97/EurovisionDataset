@@ -116,7 +116,7 @@ header[b-qiop5hr3zq] {
     --sin-angle: 0.707;
     --cos-angle: 0.707;
     --offsetX: calc(-50% * (1 - var(--cos-angle)));
-    --offsetY: calc(var(--line-height) * 1.3 - var(--short-line-width) * var(--sin-angle) / 2);/*calc(calc(var(--icon-height) - var(--line-height)) / 2 - 9px)*/;
+    --offsetY: calc(var(--line-height) * 1.3 - var(--short-line-width) * var(--sin-angle) / 2);
 
     position: relative;
     width: var(--line-width);
@@ -257,6 +257,10 @@ header[b-qiop5hr3zq] {
 /*=================================================*/
 
 @media (min-width: 500px) {
+    header[b-qiop5hr3zq] {
+        overflow: hidden;
+    }
+
     .navbar-toggler[b-qiop5hr3zq] {
         display: none;
     }
@@ -585,7 +589,6 @@ a.link[b-0tsyt0rnqa] {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
-
     font-size: 1.25em; 
 }
 
@@ -602,13 +605,14 @@ input[b-fpvnppsicx] {
 
 .contest-list[b-fpvnppsicx] {
     display: grid;
-    margin: 25px 0;
-    grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    margin: 25px 0;    
     gap: 25px;
     justify-content: center;
 }
 
 .item-card[b-fpvnppsicx] {
+    display: block;
     padding: 10px;
     background: white;
     font-size: 1.4rem;

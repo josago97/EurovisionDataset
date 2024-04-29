@@ -1,5 +1,5 @@
-﻿import Data from "../../modules/data.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
+﻿import Data from "../../modules/data.js"
+import EventHandler from "../../modules/event-handler.js"
 
 export function init(id, invoke, callback) {
     //当页面高度超过设备可见高度时，阻止掉touchmove事件。

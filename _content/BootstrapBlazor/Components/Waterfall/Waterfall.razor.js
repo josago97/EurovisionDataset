@@ -1,6 +1,6 @@
-﻿import Data from "../../modules/data.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
-import { debounce } from "../../modules/utility.js?v=8.3.9"
+﻿import Data from "../../modules/data.js"
+import EventHandler from "../../modules/event-handler.js"
+import { debounce } from "../../modules/utility.js"
 
 const cal = (el, imgWidth) => {
     const containerWidth = el.offsetWidth;

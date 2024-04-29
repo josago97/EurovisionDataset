@@ -1,7 +1,7 @@
-﻿import { isDisabled } from "../../modules/utility.js?v=8.3.9"
-import Data from "../../modules/data.js?v=8.3.9"
-import Popover from "../../modules/base-popover.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
+﻿import { isDisabled } from "../../modules/utility.js"
+import Data from "../../modules/data.js"
+import Popover from "../../modules/base-popover.js"
+import EventHandler from "../../modules/event-handler.js"
 
 export function init(id, invoke, method) {
     const el = document.getElementById(id)

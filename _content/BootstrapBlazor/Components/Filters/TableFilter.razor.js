@@ -1,6 +1,6 @@
-﻿import Data from "../../modules/data.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
-import Popover from "../../modules/base-popover.js?v=8.3.9"
+﻿import Data from "../../modules/data.js"
+import EventHandler from "../../modules/event-handler.js"
+import Popover from "../../modules/base-popover.js"
 
 export function init(id) {
     const el = document.getElementById(id)

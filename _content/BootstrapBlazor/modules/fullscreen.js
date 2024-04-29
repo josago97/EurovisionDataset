@@ -1,18 +1,27 @@
-﻿import { isElement } from "./utility.js?v=8.3.9"
-import Data from "./data.js?v=8.3.9"
+﻿import { isElement } from "./utility.js"
+import Data from "./data.js"
 
 export function init(id) {
-    const fs = {}
+    const fs = { toggleElement: null };
     Data.set(id, fs)
 
-    fs.toggle = () => {
+    fs.toggle = options => {
+        if (options.id) {
+            fs.toggleElement = document.getElementById(options.id)
+        }
+        else if (options.element && isElement(options.element)) {
+            fs.toggleElement = el
+        }
+        else {
+            fs.toggleElement = document.documentElement
+        }
+
         if (isFullscreen()) {
             exit()
         }
         else {
             fs.enter()
         }
-        fs.toggleElement.classList.toggle('bb-fs-open')
     }
 
     fs.enter = () => {
@@ -20,21 +29,30 @@ export function init(id) {
             fs.toggleElement.webkitRequestFullscreen ||
             fs.toggleElement.mozRequestFullScreen ||
             fs.toggleElement.msRequestFullscreen
+
+        // 处理 ESC 按键退出全屏
+        var handler = setTimeout(() => {
+            clearTimeout(handler);
+
+            const fullscreenCheck = () => {
+                if (!isFullscreen()) {
+                    fs.toggleElement.classList.remove('bb-fs-open')
+                }
+                else {
+                    fs.toggleElement.classList.add('bb-fs-open')
+                    requestAnimationFrame(fullscreenCheck);
+                }
+            }
+            requestAnimationFrame(fullscreenCheck);
+        }, 200);
     }
 }
 
-export function execute(id, el) {
+export function execute(id, options) {
     const fs = Data.get(id)
-    if (el && typeof (el) === 'string' && el.length > 0) {
-        fs.toggleElement = document.getElementById(el)
+    if (fs) {
+        fs.toggle(options);
     }
-    else if (el && isElement(el)) {
-        fs.toggleElement = el
-    }
-    else {
-        fs.toggleElement = document.documentElement
-    }
-    fs.toggle()
 }
 
 export function dispose(id) {

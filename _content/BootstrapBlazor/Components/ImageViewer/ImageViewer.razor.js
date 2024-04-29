@@ -1,5 +1,5 @@
-﻿import Data from "../../modules/data.js?v=8.3.9"
-import EventHandler from "../../modules/event-handler.js?v=8.3.9"
+﻿import Data from "../../modules/data.js"
+import EventHandler from "../../modules/event-handler.js"
 
 const setListeners = (viewer, index) => {
     if (viewer.prevList && viewer.prevList.length > 0) {

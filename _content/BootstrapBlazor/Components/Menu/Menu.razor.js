@@ -1,5 +1,5 @@
-﻿import { getTargetElement, getTransitionDelayDurationFromElement } from "../../modules/utility.js?v=8.3.9"
-import Data from "../../modules/data.js?v=8.3.9"
+﻿import { getTargetElement, getTransitionDelayDurationFromElement } from "../../modules/utility.js"
+import Data from "../../modules/data.js"
 
 export function init(id) {
     const el = document.getElementById(id)
