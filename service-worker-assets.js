@@ -545,7 +545,7 @@
       "url": "manifest.webmanifest"
     },
     {
-      "hash": "sha256-tyCB6g+czVR2iuYjINcYx2yF1WSW4f+qS5yu09yyBXQ=",
+      "hash": "sha256-IiZEQ8FX9NJuOZPmirn7otm\/QHszE0iw3Y5kY6nx1Kg=",
       "url": "Eurovision.WebApp.styles.css"
     },
     {
@@ -573,7 +573,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-XoEcoK94UH6PWxxuQzsF5vuf7L4TonZqVjgreOKodVQ=",
+      "hash": "sha256-ASytANH11RyJpYi7qIXAsDHbDIMJYGr1aQrXHL0q5NA=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -581,7 +581,7 @@
       "url": "_framework\/dotnet.native.8.0.4.5zshrhvpw1.js"
     },
     {
-      "hash": "sha256-XMQ0GkwxsAFaQi3spJhkFnHxNQB4iAIChLOyUzBrCOc=",
+      "hash": "sha256-fy9Z28AiPDBPWGKB228f9gZfiZjNYjUJmQkY35qxIoA=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -597,7 +597,7 @@
       "url": "_framework\/BootstrapBlazor.wasm"
     },
     {
-      "hash": "sha256-tlkMexV61f0HOM24cPHJ9ruhx40MVArSCCDL4qRjJyY=",
+      "hash": "sha256-0NEtSdsR3GD8v5qMt0q5osnQGSQzd\/hBX7OUMk433Ds=",
       "url": "_framework\/Eurovision.WebApp.wasm"
     },
     {
@@ -1321,5 +1321,5 @@
       "url": "_content\/Microsoft.AspNetCore.Components.QuickGrid\/Microsoft.AspNetCore.Components.QuickGrid.bundle.scp.css"
     }
   ],
-  "version": "IbzRFX4q"
+  "version": "hl7Yrujo"
 };
