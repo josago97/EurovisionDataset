@@ -49,3 +49,9 @@ input {
     cursor: pointer;
     box-shadow: 0 0 20px darkblue;
 }
+
+@media (max-width: 400px) {
+    .contest-list {
+        grid-template-columns: 100%;
+    }
+} 
