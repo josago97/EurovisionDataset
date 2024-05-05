@@ -54,7 +54,7 @@ svg[b-eb8o2wek0g] {
 } 
 /* /Views/Layout/NavMenu.razor.rz.scp.css */
 header[b-qiop5hr3zq] {
-    --header-size: 70px;
+    --header-size: 60px;
 
     position: sticky;
     top: 0;
@@ -62,7 +62,7 @@ header[b-qiop5hr3zq] {
     grid-template-columns: repeat(2, auto);
     grid-auto-rows: 100%;
     justify-content: space-between;
-    height: 70px;
+    height: var(--header-size);
     background-color: darkblue;
     color: white;
     z-index: 100;
@@ -156,11 +156,11 @@ header[b-qiop5hr3zq] {
 /*========== Burguer Button =========*/
 
 #icon-burguer[b-qiop5hr3zq] {
-    --icon-height: calc(var(--header-size) - 50px);
+    --icon-height: calc(var(--header-size) - 46px);
 
     position: relative;
     margin: auto;
-    width: calc(var(--icon-height) * 1.1);
+    width: calc(var(--icon-height) * 1);
     height: var(--icon-height);
     display: flex;
     justify-content: space-between;
@@ -210,7 +210,7 @@ header[b-qiop5hr3zq] {
     height: 2.5em;
     width: 100%;
     font-family: Eurovision;
-    font-size: 2em;
+    font-size: 1.8rem;
     grid-column: span 2;
     z-index: 100;
     overflow: hidden;
