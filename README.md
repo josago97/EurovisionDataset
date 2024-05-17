@@ -3,7 +3,7 @@ This repository is a freely accessible dataset that contains information about t
 
 Every year the dataset will be updated with the results of the contest, from the first edition in 1956 to the present. For Junior Eurovision, the first edition was in 2003.
 
-The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision World](https://eurovisionworld.com) and [Eurovision LOD](https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision/page/about) websites.
+The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision World](https://eurovisionworld.com), [Eurovision LOD](https://so-we-must-think.space/greenstone3/eurovision-library/collection/eurovision/page/about) and [Ogaespain](https://www.ogaespain.com/) websites.
 
 You can see the dataset information on this [web page](https://josago97.github.io/EurovisionDataset/).
 
