@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eurovision.Dataset", "EurovisionDataset\Eurovision.Dataset.csproj", "{D23376A3-F0E9-459B-9587-263D7A163113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eurovision.Dataset", "Eurovision.Dataset\Eurovision.Dataset.csproj", "{D23376A3-F0E9-459B-9587-263D7A163113}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eurovision.WebApp", "Eurovision.WebApp\Eurovision.WebApp.csproj", "{D3823898-1940-467F-9AA9-D8B6CEDFEEDE}"
 EndProject
