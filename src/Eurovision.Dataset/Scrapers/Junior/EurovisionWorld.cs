@@ -9,7 +9,6 @@ public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
 {
     private const string CONTEST_ARENA_KEY = "location";
     private const string CONTEST_CITY_AND_COUNTRY_KEY = "city";
-    private const string CONTEST_LOGO_KEY = "logo";
 
     private const string LYRICS_LANGUAGES_KEY = "language";
 
@@ -53,9 +52,6 @@ public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
             if (cityAndCountryAux.Length > 1)
                 contest.Country = CountryCollection.GetCountryCode(cityAndCountryAux[1]);
         }
-
-        if (data.TryGetValue(CONTEST_LOGO_KEY, out string logo))
-            contest.LogoUrl = logo;
     }
 
     #endregion

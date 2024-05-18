@@ -16,7 +16,7 @@ internal abstract class BaseOgaespain
 
         await playwrightScraper.LoadPageAsync($"{BASE_URL}/{GetPageUrl(year)}");
 
-        ILocator logo = playwrightScraper.Page.Locator("div.entry-content img:first-of-type").First;
+        ILocator logo = playwrightScraper.Page.Locator("div.entry-content img").First;
         string logoUrl = await FindBestUrlAsync(logo);
 
         using Stream logoStream = await httpClient.GetStreamAsync(logoUrl);

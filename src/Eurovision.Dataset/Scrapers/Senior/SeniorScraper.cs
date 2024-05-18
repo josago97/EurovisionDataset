@@ -30,12 +30,7 @@ internal class SeniorScraper : BaseScraper<Contest, Contestant>
                 contest.IntendedCountry = CountryCollection.GetCountryCode("Ukraine");
                 break;
 
-            case 2022:
-                contest.LogoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Eurovision_2022_Official_Logo.jpg/250px-Eurovision_2022_Official_Logo.jpg";
-                break;
-
             case 2020:
-                contest.LogoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/Eurovision_Song_Contest_2020.svg/188px-Eurovision_Song_Contest_2020.svg.png";
                 contestant = (Contestant)contest.Contestants.First(c => c.Country == CountryCollection.GetCountryCode("Armenia"));
                 contestant.Broadcaster = "AMPTV";
                 contestant = (Contestant)contest.Contestants.First(c => c.Country == CountryCollection.GetCountryCode("Belarus"));

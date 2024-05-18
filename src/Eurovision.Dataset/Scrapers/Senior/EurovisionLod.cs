@@ -27,8 +27,7 @@ public class EurovisionLod
     {
         Client = new SparqlQueryClient(new HttpClient(), new Uri(ENDPOINT))
         {
-            ResultsAcceptHeader = "application/sparql-results+json",
-            //DefaultGraphs = ["https://so-we-must-think.space/greenstone3/eurovision-lod-foo-library/collection/eurovision"]
+            ResultsAcceptHeader = "application/sparql-results+json"
         };
     }
 
@@ -43,25 +42,8 @@ public class EurovisionLod
             if (contest.Year > end) end = contest.Year;
         }
 
-        Dictionary<string, string>[] contestsData = await GetContestDataAsync(start, end);
         Dictionary<string, string>[] contestantsData = await GetContestantsDataAsync(start, end);
-
-        InsertDataToContests(contestsData, contests);
         InsertDataToContestants(contestantsData, contests);
-    }
-
-    private void InsertDataToContests(Dictionary<string, string>[] data, IReadOnlyList<Contest> contests)
-    {
-        foreach (Dictionary<string, string> row in data)
-        {
-            int year = int.Parse(row["year"]);
-            Contest contest = contests.FirstOrDefault(c => c.Year == year);
-
-            if (contest != null)
-            {
-                contest.LogoUrl = row["logo"];
-            }
-        }
     }
 
     private void InsertDataToContestants(Dictionary<string, string>[] data, IReadOnlyList<Contest> contests)
@@ -101,51 +83,6 @@ public class EurovisionLod
                 contestant = contestants.FirstOrDefault();
 
             if (contestant != null) InsertDataToContestant(row, contestant);
-
-            /*
-                if (row.TryGetValue("identifier", out string identifier))
-            {
-                Regex regex = new Regex(@"[0-9]+");
-                Match match = regex.Match(identifier);
-
-                if (match.Success)
-                {
-                    string country = identifier.Substring(0, match.Index);
-                    int year = int.Parse(match.Value);
-
-                    IEnumerable<Contestant> contestants = contests.FirstOrDefault(c => c.Year == year)
-                        ?.Contestants?.Cast<Contestant>()?.Where(c =>
-                        {
-                            string countryName = Utils.GetCountryName(c.Country).Replace(" ", "");
-                            return countryName.Equals(country, StringComparison.OrdinalIgnoreCase);
-                        });
-
-                    if (year == 1956)
-                    {
-                        string song = identifier.Substring(match.Index + match.Length);
-
-                        contestant = contestants.FirstOrDefault(c =>
-                            c.Song.Replace(" ", "").StartsWith(song, StringComparison.OrdinalIgnoreCase));
-                    }
-                    else
-                        contestant = contestants.FirstOrDefault();
-                }
-            }
-
-            if (contestant != null)
-            {
-                if (row.TryGetValue("key", out string key) && !string.IsNullOrEmpty(key))
-                    contestant.Tone = key;
-
-                if (row.TryGetValue("scale", out string scale) && !string.IsNullOrEmpty(scale))
-                {
-                    contestant.Tone += $" {scale}";
-                    contestant.Tone = contestant.Tone.Trim();
-                }
-
-                if (row.TryGetValue("bpm", out string bpm) && double.TryParse(bpm, out double bpmValue))
-                    contestant.Bpm = (int)Math.Round(bpmValue);
-            }*/
         }
     }
 
@@ -162,44 +99,6 @@ public class EurovisionLod
 
         if (data.TryGetValue("bpm", out string bpm) && double.TryParse(bpm, out double bpmValue))
             contestant.Bpm = (int)Math.Round(bpmValue);
-    }
-
-    private async Task<Dictionary<string, string>[]> GetContestDataAsync(int start, int end)
-    {
-        SparqlParameterizedString query = new SparqlParameterizedString();
-
-        query.CommandText = $@"SELECT DISTINCT ?year ?logo WHERE {{
-                
-            ?esc_contest_uri dc:Relation.isPartOf <{EUROVISION_COLLECTION}>.
-
-            ?esc_contest_uri gsdlextracted:Year ?year.
-            ?esc_contest_uri gsdlextracted:YearLogoImg ?logo.
-
-            BIND(xsd:integer(?year) AS ?year_int)
-            FILTER(@start <= ?year_int && ?year_int <= @end)
-        }}
-        ORDER BY ASC(?year_int)";
-
-        query.SetLiteral("start", start);
-        query.SetLiteral("end", end);
-
-        Dictionary<string, string>[] contestsData = await SendQueryAsync(query);
-
-        foreach (Dictionary<string, string> data in contestsData)
-        {
-            if (data.TryGetValue("logo", out string logo) && !string.IsNullOrEmpty(logo))
-            {
-                string pattern = "src=\"";
-                int patternIndex = logo.IndexOf(pattern);
-                int startIndex = patternIndex + pattern.Length;
-                int quoteIndex = logo.IndexOf('\"', startIndex);
-                logo = logo.Substring(startIndex, quoteIndex - startIndex);
-
-                data["logo"] = $"https:{logo}";
-            }
-        }
-
-        return contestsData;
     }
 
     private Task<Dictionary<string, string>[]> GetContestantsDataAsync(int start, int end)
