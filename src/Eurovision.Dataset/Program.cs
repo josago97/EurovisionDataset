@@ -50,8 +50,8 @@ public class Program
         }
         */
 
-        var contests = Enumerable.Range(2003, 21).Select(x => new Entities.Contest() { Year = x }).ToArray();
-        var logoScraper = new JuniorLogoScraper();
+        var contests = Enumerable.Range(1990, 35).Select(x => new Entities.Contest() { Year = x }).ToArray();
+        var logoScraper = new SeniorLogoScraper();
 
         foreach (var contest in contests)
         {
