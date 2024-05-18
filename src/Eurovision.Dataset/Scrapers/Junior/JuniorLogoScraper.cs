@@ -2,6 +2,6 @@
 
 internal class JuniorLogoScraper : BaseLogoScraper
 {
-    public JuniorLogoScraper() : base(Constants.JUNIOR_LOGOS_PATH, new Ogaespain())
+    public JuniorLogoScraper() : base(Constants.JUNIOR_LOGOS_FOLDER, new Ogaespain())
     { }
 }

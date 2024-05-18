@@ -144,7 +144,7 @@ internal abstract class BaseScraper<TContest, TContestant>
             {
                 Languages = languages.Split(", "),
                 Title = title,
-                Content = Asset.ReadEmbedTextResource($"{path}.txt")
+                Content = Assets.ReadEmbedTextResource($"{path}.txt")
             }
         ];
     }

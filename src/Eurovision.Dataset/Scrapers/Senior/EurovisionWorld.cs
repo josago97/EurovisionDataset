@@ -158,10 +158,10 @@ public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
 
         string[] roundNames = year switch
         {
-            < 2004 => new[] { "final" },
-            < 2008 => new[] { "final", "semi-final" },
-            2020 => new string[0],
-            _ => new[] { "final", "semi-final-1", "semi-final-2" }
+            < 2004 => ["final"],
+            < 2008 => ["final", "semi-final"],
+            2020 => [],
+            _ => ["final", "semi-final-1", "semi-final-2"]
         };
 
         foreach (string roundName in roundNames)
@@ -298,7 +298,7 @@ public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
             {
                 ContestantId = contestants.First(c => c.Country == countryCode
                         && c.Song.Equals(song, StringComparison.OrdinalIgnoreCase)).Id,
-                Scores = new Score[0]
+                Scores = []
             };
         }
         else if (scores.ContainsKey(countryCode))

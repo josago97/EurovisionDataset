@@ -14,7 +14,7 @@ namespace Eurovision.Dataset;
 
 public class Program
 {
-    private const string DATA_FOLDER = "Dataset";
+    private const string DATA_FOLDER = Constants.DATASET_PATH;
     private const string COUNTRIES_FILENAME = "countries";
     private const string SENIOR_FILENAME = "eurovision";
     private const string JUNIOR_FILENAME = "junior";
@@ -40,26 +40,6 @@ public class Program
 
     private static async Task GetDataAsync()
     {
-        /*
-        var contests = Enumerable.Range(1956, 32).Select(x => new Entities.Contest() { Year = x }).ToArray();
-        var logoScraper = new SeniorLogoScraper();
-        
-        foreach(var contest in contests)
-        {
-            await logoScraper.ScrapAsync(contest);
-        }
-        */
-
-        var contests = Enumerable.Range(1990, 35).Select(x => new Entities.Contest() { Year = x }).ToArray();
-        var logoScraper = new SeniorLogoScraper();
-
-        foreach (var contest in contests)
-        {
-            await logoScraper.ScrapAsync(contest);
-        }
-
-        //await Task.WhenAll(contests.Select(logoScraper.ScrapAsync));
-
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         GetCountries();

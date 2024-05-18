@@ -1,5 +1,4 @@
 ﻿using Eurovision.Dataset.Entities;
-using Eurovision.Dataset.Utilities;
 using SkiaSharp;
 
 namespace Eurovision.Dataset.Scrapers;
@@ -17,7 +16,7 @@ internal abstract class BaseLogoScraper
     {
         RelativeFolderPath = folder;
         Ogaespain = ogaespain;
-        FolderPath = Asset.GetFileSystemAbsolutePath(RelativeFolderPath);
+        FolderPath = $"{Constants.ASSETS_PATH}/{RelativeFolderPath}";
         StoredLogos = GetStoredLogos();
     }
 

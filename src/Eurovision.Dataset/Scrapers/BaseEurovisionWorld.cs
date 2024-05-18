@@ -38,6 +38,7 @@ public abstract class BaseEurovisionWorld
             switch (response.Status)
             {
                 case 429: // Too Many Requests
+                    Console.WriteLine("Eurovisionworld Error 429: {0}", absoluteUrl);
                     await Task.Delay(TOO_MANY_REQUESTS_DELAY);
                     break;
             }

@@ -2,9 +2,8 @@
 
 namespace Eurovision.Dataset.Utilities;
 
-internal static class Asset
+internal static class Assets
 {
-    private const string FILE_SYSTEM_FOLDER_PATH = "../../../../../assets";
     private const string EMBED_FOLDER_PATH = "Eurovision.Dataset.Assets";
 
     public static Stream OpenEmbedResource(string path)
@@ -34,10 +33,5 @@ internal static class Asset
     private static string GetEmbedAbsolutePath(string relativePath)
     {
         return $"{EMBED_FOLDER_PATH}/{relativePath}".Replace('/', '.');
-    }
-
-    public static string GetFileSystemAbsolutePath(string relativePath)
-    {
-        return $"{FILE_SYSTEM_FOLDER_PATH}/{relativePath}";
     }
 }

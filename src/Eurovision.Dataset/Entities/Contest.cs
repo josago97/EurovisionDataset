@@ -12,5 +12,5 @@ public class Contest
     public string Voting { get; set; }
     public IEnumerable<string> Presenters { get; set; }
     public IEnumerable<Contestant> Contestants { get; set; }
-    public IEnumerable<Round> Rounds { get; set; }
+    public IReadOnlyList<Round> Rounds { get; set; }
 }
