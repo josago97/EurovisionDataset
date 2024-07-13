@@ -40,7 +40,7 @@ internal abstract class BaseLogoScraper
             logoFileName = SaveLogo(year, logoRaw);
         }
 
-        contest.LogoUrl = $"{GITHUB_URL}{RelativeFolderPath}{logoFileName}";
+        contest.LogoUrl = $"{GITHUB_URL}{RelativeFolderPath}/{logoFileName}";
     }
 
     private string SaveLogo(int year, SKData logoRaw)
