@@ -27,7 +27,7 @@ internal class SeniorScraper : BaseScraper<Contest, Contestant>
         switch (contest.Year)
         {
             case 2024:
-                contest.Rounds[1].Disqualified = [contest.Contestants.First(c => c.Country == CountryCollection.GetCountryCode("Netherlands")).Id];
+                contest.Rounds[2].Disqualifieds = [contest.Contestants.First(c => c.Country == CountryCollection.GetCountryCode("Netherlands")).Id];
                 break;
 
             case 2023:

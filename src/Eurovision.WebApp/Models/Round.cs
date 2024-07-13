@@ -6,4 +6,5 @@ public class Round
     public DateOnly Date { get; set; }
     public TimeOnly? Time { get; set; }
     public IReadOnlyList<Performance> Performances { get; set; }
+    public IEnumerable<int> Disqualifieds { get; set; }
 }

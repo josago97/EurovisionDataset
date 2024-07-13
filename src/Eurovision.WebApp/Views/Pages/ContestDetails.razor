@@ -99,7 +99,15 @@
                         .ThenAscending(c => c.Artist)" 
                     InitialSortDirection="SortDirection.Ascending">
                     <a class="link" href=@($"{BasePath}/{context.Id}")>
-                        <div class="song">@context.Song</div>
+                        <div>
+                            <span class="song">@context.Song</span>
+                            
+                            @if (round.Disqualifieds != null && round.Disqualifieds.Contains(context.Id))
+                            {
+                               <span class="disqualified">Disqualified</span> 
+                            }
+
+                        </div>
                         <div class="artist">@context.Artist</div>
                     </a>
                 </TemplateColumn>

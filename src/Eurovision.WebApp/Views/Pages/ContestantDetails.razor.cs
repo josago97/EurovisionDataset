@@ -88,7 +88,7 @@ public partial class ContestantDetails
             Spokesperson = contestant.Spokesperson,
             StageDirector = contestant.StageDirector,
             Tone = contestant.Tone,
-            Videos = contestant.VideoUrls,
+            Videos = contestant.VideoUrls
         };
 
         if (!contestant.Backings.IsNullOrEmpty())
@@ -105,6 +105,12 @@ public partial class ContestantDetails
 
         if (!contestant.Writers.IsNullOrEmpty())
             result.Writers = string.Join(", ", contestant.Writers);
+
+        if (contest.Rounds != null)
+        {
+            result.Disqualified = contest.Rounds.Any(round =>
+                round.Disqualifieds != null && round.Disqualifieds.Contains(contestantId));
+        }
 
         return result;
     }
@@ -245,6 +251,7 @@ public partial class ContestantDetails
         public string Tone { get; set; }
         public IReadOnlyList<string> Videos { get; set; }
         public string Writers { get; set; }
+        public bool Disqualified { get; set; }
     }
 
     private class MusicSheet

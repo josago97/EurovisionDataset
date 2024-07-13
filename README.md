@@ -1,4 +1,5 @@
 # ❤ Unofficial Eurovision Song Contest Dataset ❤
+
 This repository is a freely accessible dataset that contains information about the participants and votes of all editions of the Eurovision Song Contest and Junior Eurovision Song Contest.
 
 Every year the dataset will be updated with the results of the contest, from the first edition in 1956 to the present. For Junior Eurovision, the first edition was in 2003.
@@ -8,20 +9,25 @@ The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision Worl
 You can see the dataset information on this [web page](https://josago97.github.io/EurovisionDataset/).
 
 ## Downloading the dataset
+
 The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the [dataset folder](https://github.com/josago97/EurovisionDataset/tree/main/dataset).
 
 ## Data description
+
 The dataset is in JSON format.
 
 ## Countries (countries.json)
+
 A dictionary of strings with the relationship between the codes and the names of the countries that have ever participated in the contest.
 
 ## Eurovision (eurovision.json)
+
 An array of Contest representing all the editions of the contest.
 
 ### Contest
+
 It represents an annual edition.
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | year | integer | Year in which the contest was held |
 | arena | string | Building where the contest was held |
@@ -37,8 +43,9 @@ It represents an annual edition.
 | rounds | Round[] | All rounds of the contest |
 
 ### Contestant
+
 It represents each of the contestant songs of the edition.
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | id | integer | Contestant ID (used in Performance ) |
 | country | string | Code of the country that is represented |
@@ -61,42 +68,49 @@ It represents each of the contestant songs of the edition.
 | commentators | string[] | Candidate country commentators|
 
 ### Lyrics
+
 It represents the original lyrics of the song and each of the translations of the lyrics (indicating their languages).
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | languages | string[] | All languages that contains the song lyrics |
 | title | string | The song title |
 | content | string | The song lyrics, paragraphs are separated by double line break ("\n\n")|
 
 ### Round
-| Attribute | Type |  Description |  
-|---|---|---|
-| name | string | Round name (final, semifinal if the year is between 2004 and 2007, semifinal1 or semifinal2 if the year is greater than 2007  ) |
-| date | string | Date when the round was held in UTC |
-| time | string | Time when the round was held in UTC |
-| performances | Performance[] | Results of the performances of the contestants in this round |
+
+| Attribute     | Type          | Description                                                                                                                    |
+| ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| name          | string        | Round name (final, semifinal if the year is between 2004 and 2007, semifinal1 or semifinal2 if the year is greater than 2007 ) |
+| date          | string        | Date when the round was held in UTC                                                                                            |
+| time          | string        | Time when the round was held in UTC                                                                                            |
+| performances  | Performance[] | Results of the performances of the contestants in this round                                                                   |
+| disqualifieds | int[]         | The id of the contestants who have been disqualified in the round                                                              |
 
 ### Performance
-| Attribute | Type |  Description |  
-|---|---|---|
-| contestantId | integer | Contestant ID |
-| running | integer | Place on the running |
-| place | integer | Place in the ranking |
-| scores | Score[] | Score and voting |
+
+| Attribute    | Type    | Description          |
+| ------------ | ------- | -------------------- |
+| contestantId | integer | Contestant ID        |
+| running      | integer | Place on the running |
+| place        | integer | Place in the ranking |
+| scores       | Score[] | Score and voting     |
 
 ### Score
-| Attribute | Type |  Description |  
-|---|---|---|
-| name | string | Origin of points (total, tele and jury if the year is greater than 2015) |
-| points | integer | Total points earned |
-| votes | Dictionary<string, integer> | Votes received from each country (using the country code) |
+
+| Attribute | Type                        | Description                                                              |
+| --------- | --------------------------- | ------------------------------------------------------------------------ |
+| name      | string                      | Origin of points (total, tele and jury if the year is greater than 2015) |
+| points    | integer                     | Total points earned                                                      |
+| votes     | Dictionary<string, integer> | Votes received from each country (using the country code)                |
 
 ## Junior Eurovision (junior.json)
+
 An array of Contest representing all the editions of the junior contest.
 
 ### Contest
+
 It represents an annual edition.
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | year | integer | Year in which the contest was held |
 | arena | string | Building where the contest was held |
@@ -110,8 +124,9 @@ It represents an annual edition.
 | rounds | Round[] | All rounds of the contest |
 
 ### Contestant
+
 It represents each of the contestant songs of the edition.
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | id | integer | Contestant ID (used in Performance ) |
 | country | string | Code of the country that is represented |
@@ -126,31 +141,35 @@ It represents each of the contestant songs of the edition.
 | writers | string[] | Song writers |
 
 ### Lyrics
+
 It represents the original lyrics of the song and each of the translations of the lyrics (indicating their languages).
-| Attribute | Type |  Description |  
+| Attribute | Type | Description |  
 |---|---|---|
 | languages | string[] | All languages that contains the song lyrics |
 | title | string | The song title |
 | content | string | The song lyrics, paragraphs are separated by double line break ("\n\n")|
 
 ### Round
-| Attribute | Type |  Description |  
-|---|---|---|
-| name | string | Round name (finals only for now) |
-| date | string | Date when the round was held in UTC |
-| time | string | Time when the round was held in UTC |
+
+| Attribute    | Type          | Description                                                  |
+| ------------ | ------------- | ------------------------------------------------------------ |
+| name         | string        | Round name (finals only for now)                             |
+| date         | string        | Date when the round was held in UTC                          |
+| time         | string        | Time when the round was held in UTC                          |
 | performances | Performance[] | Results of the performances of the contestants in this round |
 
 ### Performance
-| Attribute | Type |  Description |  
-|---|---|---|
-| contestantId | integer | Contestant ID |
-| running | integer | Place on the running |
-| place | integer | Place in the ranking |
-| scores | Score[] | Score and voting |
+
+| Attribute    | Type    | Description          |
+| ------------ | ------- | -------------------- |
+| contestantId | integer | Contestant ID        |
+| running      | integer | Place on the running |
+| place        | integer | Place in the ranking |
+| scores       | Score[] | Score and voting     |
 
 ### Score
-| Attribute | Type |  Description |  
-|---|---|---|
-| name | string | Origin of points (total, nationals, online, kids, etc.) |
-| points | integer | Points earned |
+
+| Attribute | Type    | Description                                             |
+| --------- | ------- | ------------------------------------------------------- |
+| name      | string  | Origin of points (total, nationals, online, kids, etc.) |
+| points    | integer | Points earned                                           |

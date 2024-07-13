@@ -29,6 +29,17 @@
     }
 }
 
+.disqualified {
+    margin: auto;
+    padding: 5px 10px;
+    background-color: black;
+    color: white;
+    border-radius: 2px;
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold;
+}
+
 .yt-video {
     position: relative;
     padding-bottom: 56.25%; /* 16:9, for an aspect ratio of 1:1 change to this value to 100% */ 

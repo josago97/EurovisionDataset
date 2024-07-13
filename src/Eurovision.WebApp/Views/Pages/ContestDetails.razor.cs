@@ -145,10 +145,13 @@ public partial class ContestDetails : IDisposable
 
         foreach (Round round in contest.Rounds)
         {
+            IReadOnlyList<ContestantData> contestants = GetContestantsData(contest, round.Performances);
+
             result.Add(new RoundData()
             {
                 Name = Utils.GetDisplayRoundName(round.Name),
-                Contestants = GetContestantsData(contest, round.Performances)
+                Contestants = contestants,
+                Disqualifieds = round.Disqualifieds
             });
         }
 
@@ -196,7 +199,7 @@ public partial class ContestDetails : IDisposable
     {
         List<ContestantData> result = new List<ContestantData>();
 
-        foreach (var contestant in contest.Contestants)
+        foreach (Contestant contestant in contest.Contestants)
         {
             result.Add(new ContestantData()
             {
@@ -231,6 +234,7 @@ public partial class ContestDetails : IDisposable
     {
         public string Name { get; set; }
         public IReadOnlyList<ContestantData> Contestants { get; set; }
+        public IEnumerable<int> Disqualifieds { get; set; }
     }
 
     private class ContestantData

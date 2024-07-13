@@ -115,6 +115,16 @@ a.link {
     height: 1.25em;
 }
 
+.disqualified {
+    margin-left: 1em;
+    padding: 3px;
+    background-color: black;
+    color: white;
+    border-radius: 2px;
+    font-size: 80%;
+    font-weight: bold;
+}
+
 /*===============================================================*/
 
 

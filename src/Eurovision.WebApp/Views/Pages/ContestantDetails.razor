@@ -13,6 +13,11 @@
         <EurovisionHeartFlag CountryCode="@Contestant.CountryCode"/>
     </div>
 
+    @if (Contestant.Disqualified)
+    {
+        <div class="disqualified">Disqualified</div>
+    }
+
     @if (Contestant.Videos.Count > 0)
     {
         <div class="yt-video">
