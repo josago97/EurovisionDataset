@@ -1,3 +1,4 @@
+using System.Globalization;
 using BlazorPro.BlazorSize;
 using Eurovision.WebApp.Models;
 using Microsoft.AspNetCore.Components.Web;
@@ -9,6 +10,8 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");

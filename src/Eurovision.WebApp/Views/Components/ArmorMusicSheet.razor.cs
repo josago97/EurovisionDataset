@@ -18,6 +18,10 @@ public partial class ArmorMusicSheet
     private const int STAFF_POSITION_Y = TEMPO_POSITION_Y + 15;
     private const int STAFF_WIDTH = 110;
     private const int STAFF_SPACE = 6;
+    private const int POSITION_C_NOTE = STAFF_POSITION_Y + STAFF_SPACE * 5;
+    private const int TEMPO_SIZE = 15;
+    private const int PENTAGRAM_ITEM_SIZE = 30;
+    private const double OVERLINE_SIZE = 15.75;
     private static readonly Notes[] SHARPS_ORDER = { Notes.C, Notes.G, Notes.D, Notes.A, Notes.E, Notes.B, Notes.FSharp, Notes.CSharp };
     private static readonly double[] SHARP_POSITIONS = { 0, 1.5, -0.5, 1, 2.5, 0.5, 2 }; // F C G D A E B
     private static readonly Notes[] FLATS_ORDER = { Notes.C, Notes.F, Notes.BFlat, Notes.EFlat, Notes.AFlat, Notes.DFlat, Notes.GFlat, Notes.CFlat };
@@ -75,8 +79,8 @@ public partial class ArmorMusicSheet
 
     private void DrawTempo(StringBuilder builder, int tempo)
     {
-        builder.AppendLine(DrawText(0, TEMPO_POSITION_Y, 12, MUSIC_FONT, "qj"));
-        builder.AppendLine(DrawText(11, TEMPO_POSITION_Y, 8, "Open Sans", $"= {tempo}"));
+        builder.AppendLine(DrawText(0, TEMPO_POSITION_Y, TEMPO_SIZE, MUSIC_FONT, "qj"));
+        builder.AppendLine(DrawText(11, TEMPO_POSITION_Y, TEMPO_SIZE - 4, "Open Sans", $"= {tempo}"));
     }
 
     private void DrawStaff(StringBuilder stringBuilder)
@@ -90,7 +94,7 @@ public partial class ArmorMusicSheet
         }
 
         PositionX += MARGIN_KEY;
-        stringBuilder.AppendLine(DrawText(PositionX, STAFF_POSITION_Y + 16, 22, MUSIC_FONT, "Gj"));
+        stringBuilder.AppendLine(DrawText(PositionX, STAFF_POSITION_Y + 16, PENTAGRAM_ITEM_SIZE, MUSIC_FONT, "Gj"));
     }
 
     private void DrawArmor(StringBuilder builder)
@@ -131,7 +135,7 @@ public partial class ArmorMusicSheet
         {
             int y = (int)(STAFF_POSITION_Y + alterationPositions[i] * STAFF_SPACE);
             
-            builder.AppendLine(DrawText(PositionX, y, 22, MUSIC_FONT, alteration));
+            builder.AppendLine(DrawText(PositionX, y, PENTAGRAM_ITEM_SIZE, MUSIC_FONT, alteration));
             PositionX += ALTERATION_SPACE;
         }
     }
@@ -139,21 +143,22 @@ public partial class ArmorMusicSheet
     private void DrawAccord(StringBuilder builder)
     {
         int startNote = (int)Tone / 3; // flat + nature + sharp
-        double positionNoteC = STAFF_POSITION_Y + STAFF_SPACE * 5; // Note C position
-        double position = positionNoteC - (STAFF_SPACE / 2) * startNote;
+        double positionY = POSITION_C_NOTE - (STAFF_SPACE / 2) * startNote;
 
         PositionX += MARGIN_ACCORD;
 
         for (int i = 0; i < ACCORD_NOTES_LENGTH; i++)
         {
-            builder.AppendLine(DrawText(PositionX, position, 22, MUSIC_FONT, "wj"));
-            position -= STAFF_SPACE;
+            string note = DrawText(PositionX, positionY, PENTAGRAM_ITEM_SIZE, MUSIC_FONT, "wj");
+            builder.AppendLine(note);
+            positionY -= STAFF_SPACE;
         }
 
         // If start Note is C then we must draw the overline
         if (startNote == 0)
         {
-            builder.AppendLine(DrawLine(PositionX, positionNoteC, PositionX + 15.5, positionNoteC));
+            string overline = DrawLine(PositionX, POSITION_C_NOTE, PositionX + OVERLINE_SIZE, POSITION_C_NOTE);
+            builder.AppendLine(overline);
         }
     }
 
@@ -164,6 +169,6 @@ public partial class ArmorMusicSheet
 
     private string DrawText(double x, double y, double fontSize, string fontFamily, string innerHtml)
     {
-        return $"<text x=\"{x}\" y=\"{y}\" style=\"fill:rgb(0,0,0); font-size:{fontSize}pt; font-family: {fontFamily};\">{innerHtml}</text>";
+        return $"<text x=\"{x}\" y=\"{y}\" style=\"fill:rgb(0,0,0); font-size:{fontSize}px; font-family: {fontFamily};\">{innerHtml}</text>";
     }
 }
