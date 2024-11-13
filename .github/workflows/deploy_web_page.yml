@@ -33,7 +33,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.X
+        dotnet-version: 9.0.X
         
      # Install wasm-tools
     - name: Install wasm-tools
