@@ -16,11 +16,27 @@ const Popover = {
             },
             ...config || {}
         }
+        const createPopover = () => {
+            if (!popover.isDisabled()) {
+                popover.popover = bootstrap.Popover.getInstance(popover.toggleElement);
+                if (popover.popover === null) {
+                    popover.popover = new bootstrap.Popover(popover.toggleElement)
+                    hackPopover(popover.popover, popover.class)
+                    if (popover.initCallback) {
+                        popover.initCallback();
+                    }
+                }
+            }
+        }
+
         popover.toggleElement = el.querySelector(popover.toggleClass)
         popover.isPopover = popover.toggleElement.getAttribute('data-bs-toggle') === 'bb.dropdown'
         popover.toggleMenu = el.querySelector(popover.dropdownSelector)
         popover.isShown = () => {
-            return popover.popover && popover.popover._isShown();
+            if (popover.popover === void 0) {
+                createPopover();
+            }
+            return popover.popover._isShown();
         }
 
         popover.setCustomClass = () => {
@@ -90,22 +106,14 @@ const Popover = {
                 if (popover.hasDisplayNone) {
                     popover.toggleMenu.classList.add("d-none");
                 }
+
+                popover.popover.tip.classList.remove('show');
                 el.classList.remove('show');
                 el.append(popover.toggleMenu);
             }
 
             const active = e => {
-                if (!popover.isDisabled()) {
-                    popover.popover = bootstrap.Popover.getInstance(popover.toggleElement);
-                    if (!popover.popover) {
-                        popover.popover = new bootstrap.Popover(popover.toggleElement)
-                        hackPopover(popover.popover, popover.class)
-                        if (popover.initCallback) {
-                            popover.initCallback();
-                        }
-                        popover.popover.toggle()
-                    }
-                }
+                createPopover();
 
                 if (popover.clickToggle) {
                     popover.clickToggle(e)
@@ -156,7 +164,6 @@ const Popover = {
                 observer.observe(popover.toggleMenu)
                 popover.observer = observer
             }
-
         }
         else {
             const show = e => {
@@ -167,6 +174,8 @@ const Popover = {
             }
 
             EventHandler.on(el, 'show.bs.dropdown', show)
+
+            popover.popover = bootstrap.Dropdown.getOrCreateInstance(popover.toggleElement);
         }
 
         return popover

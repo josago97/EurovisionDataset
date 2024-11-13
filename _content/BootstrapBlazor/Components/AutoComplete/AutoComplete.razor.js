@@ -13,7 +13,7 @@ export function init(id, invoke) {
     Data.set(id, ac)
 
     if (el.querySelector('[data-bs-toggle="bb.dropdown"]')) {
-        ac.popover = Popover.init(el, { toggleClass: '[data-bs-toggle="bb.dropdown"]' })
+        ac.popover = Popover.init(el, { toggleClass: '[data-bs-toggle="bb.dropdown"]' });
     }
 
     // debounce
@@ -23,7 +23,7 @@ export function init(id, invoke) {
         EventHandler.on(input, 'keyup', debounce(e => {
             invoke.invokeMethodAsync('OnKeyUp', e.code)
         }, duration, e => {
-            return ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Escape', 'Enter'].indexOf(e.key) > -1
+            return ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Escape', 'Enter', 'NumpadEnter'].indexOf(e.key) > -1
         }))
     }
     else {
@@ -35,7 +35,6 @@ export function init(id, invoke) {
 
 export function autoScroll(id, index) {
     const ac = Data.get(id)
-    const el = ac.el
     const menu = ac.menu
     const styles = getComputedStyle(menu)
     const maxHeight = parseInt(styles.maxHeight) / 2
@@ -69,6 +68,11 @@ export function composition(id) {
     }
 }
 
+export function triggerFocus(id) {
+    const ac = Data.get(id)
+    ac.popover?.show();
+}
+
 export function dispose(id) {
     const ac = Data.get(id)
     Data.remove(id)
@@ -76,9 +80,9 @@ export function dispose(id) {
     if (ac) {
         if (ac.popover) {
             Popover.dispose(ac.popover)
-        }
-        if (ac.el) {
-            EventHandler.off(ac.el, 'focus')
+            if (ac.input) {
+                EventHandler.off(ac.input, 'focus')
+            }
         }
         if (ac.composition) {
             Input.dispose(`${id}_input`)

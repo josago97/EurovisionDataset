@@ -56,6 +56,31 @@ const copy = (text = '') => {
     }
 }
 
+const getTextFromClipboard = () => {
+    return navigator.clipboard.readText();
+}
+
+async function getAllClipboardContents() {
+    try {
+        const clipboardItems = await navigator.clipboard.read();
+        let items = [];
+        for (const clipboardItem of clipboardItems) {
+            for (const mimeType of clipboardItem.types) {
+                const blob = await clipboardItem.getType(mimeType);
+                const arrayBuffer = await blob.arrayBuffer();
+                items.push({
+                    mimeType: mimeType,
+                    data: new Uint8Array(arrayBuffer)
+                });
+            }
+        }
+        return items;
+    } catch (error) {
+        console.error('Failed to read from clipboard:', error);
+    }
+    return [];
+}
+
 const getUID = (prefix = 'bb') => {
     let id = "";
     do {
@@ -353,7 +378,9 @@ const drag = (element, start, move, end) => {
         }
 
         if (!notDrag) {
-            e.preventDefault()
+            if (e.cancelable) {
+                e.preventDefault();
+            }
             e.stopPropagation()
 
             document.addEventListener('mousemove', handleDragMove)
@@ -659,6 +686,115 @@ export function getFingerCode() {
     return hash.toString();
 }
 
+export function getHtml(options) {
+    let html = '';
+    let el = null;
+    if (options.id) {
+        el = document.getElementById(options.id);
+    }
+    else if (options.selector) {
+        el = document.querySelector(options.selector);
+    }
+    if (el) {
+        html = el.outerHTML;
+    }
+    return html;
+}
+
+
+export function getPreferredTheme() {
+    const storedTheme = getTheme()
+    if (storedTheme) {
+        return storedTheme
+    }
+
+    return getAutoThemeValue();
+}
+
+export function getTheme() {
+    return localStorage.getItem('theme') || document.documentElement.getAttribute('data-bs-theme') || 'light';
+}
+
+export function saveTheme(theme) {
+    if (localStorage) {
+        localStorage.setItem('theme', theme);
+    }
+}
+
+export function getAutoThemeValue() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+export function setTheme(theme, sync) {
+    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-bs-theme', 'dark')
+    }
+    else {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    }
+
+    if (sync === true) {
+        const providers = document.querySelectorAll('.bb-theme-mode');
+        providers.forEach(p => {
+            const activeItem = p.querySelector(`.dropdown-item[data-bb-theme-value="${theme}"]`);
+            setActiveTheme(p, activeItem)
+        })
+        saveTheme(theme);
+    }
+}
+
+export function setActiveTheme(el, activeItem) {
+    const currentTheme = el.querySelector('.active');
+    if (currentTheme) {
+        currentTheme.classList.remove('active');
+    }
+
+    if (activeItem) {
+        activeItem.classList.add('active');
+        const iconItem = activeItem.querySelector('[data-bb-theme-icon]');
+        if (iconItem) {
+            const icon = iconItem.getAttribute('data-bb-theme-icon');
+            if (icon) {
+                const toggleIcon = el.querySelector('.bb-theme-mode-active');
+                if (toggleIcon) {
+                    toggleIcon.outerHTML = `<i class="${icon} bb-theme-mode-active"></i>`;
+                }
+            }
+        }
+    }
+}
+
+export function switchTheme(theme, x = 0, y = 0, sync = true) {
+    if (isFunction(document.startViewTransition)) {
+        document.documentElement.style.setProperty('--bb-theme-x', `${x}px`);
+        document.documentElement.style.setProperty('--bb-theme-y', `${y}px`);
+        document.startViewTransition(() => {
+            setTheme(theme, sync);
+        });
+    }
+    else {
+        setTheme(theme, sync);
+    }
+}
+
+const deepMerge = (obj1, obj2) => {
+    for (let key in obj2) {
+        if (obj2.hasOwnProperty(key)) {
+            if (obj2[key] instanceof Object && obj1[key] instanceof Object) {
+                obj1[key] = deepMerge(obj1[key], obj2[key]);
+            }
+            else {
+                obj1[key] = obj2[key];
+            }
+        }
+    }
+    return obj1;
+}
+
+export function setTitle(title) {
+    document.title = title;
+}
+
 export {
     autoAdd,
     autoRemove,
@@ -669,8 +805,11 @@ export {
     addLink,
     addScript,
     copy,
+    deepMerge,
     debounce,
     drag,
+    getTextFromClipboard,
+    getAllClipboardContents,
     insertBefore,
     insertAfter,
     isDisabled,

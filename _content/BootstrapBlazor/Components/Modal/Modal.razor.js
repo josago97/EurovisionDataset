@@ -9,19 +9,24 @@ export function init(id, invoke, shownCallback, closeCallback) {
         shownCallback,
         closeCallback,
         pop: () => {
-            if (modal.modal) {
-                modal.modal._dialog.remove()
-                modal.modal.dispose()
-                modal.modal = null
-                document.body.classList.remove('modal-open');
-                document.body.style.paddingRight = '';
-                document.body.style.overflow = '';
+            if (modal) {
+                modal.hide();
             }
         }
     }
     Data.set(id, modal)
 
     EventHandler.on(el, 'shown.bs.modal', () => {
+        const dialog = el.querySelector('.modal-dialog');
+        if (dialog.classList.contains('is-draggable-center')) {
+            const width = dialog.offsetWidth / 2;
+            const height = dialog.offsetHeight / 2;
+
+            dialog.style.setProperty("margin-left", `calc(50vw - ${width}px)`);
+            dialog.style.setProperty("margin-top", `calc(50vh - ${height}px)`);
+            dialog.classList.remove('is-draggable-center');
+        }
+
         invoke.invokeMethodAsync(shownCallback)
     })
     EventHandler.on(el, 'hidden.bs.modal', e => {

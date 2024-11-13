@@ -15,7 +15,6 @@ export function init(id) {
         inputFile.click()
     })
 
-    //阻止浏览器默认行为
     EventHandler.on(document, "dragleave", preventHandler)
     EventHandler.on(document, 'drop', preventHandler)
     EventHandler.on(document, 'dragenter', preventHandler)
@@ -23,15 +22,12 @@ export function init(id) {
 
     EventHandler.on(el, 'drop', e => {
         try {
-            //获取文件对象
             const fileList = e.dataTransfer.files
-
-            //检测是否是拖拽文件到页面的操作
             if (fileList.length === 0) {
                 return false
             }
 
-            inputFile.files = e.dataTransfer.files
+            inputFile.files = fileList
             const event = new Event('change', { bubbles: true })
             inputFile.dispatchEvent(event)
         } catch (e) {
@@ -45,13 +41,23 @@ export function init(id) {
         inputFile.dispatchEvent(event)
     })
 
-    EventHandler.on(el, 'click', '.btn-zoom', e => {
-        const previewId = el.getAttribute('data-bb-previewer-id');
-        const prev = Data.get(previewId)
-        const button = e.delegateTarget
-        const buttons = [...el.querySelectorAll('.btn-zoom')]
-        prev.viewer.updatePrevList([...el.querySelectorAll('.upload-body img')].map(v => v.src))
-        prev.viewer.show(buttons.indexOf(button))
+    const getIndex = target => {
+        let index = 0;
+        let button = target;
+        if (button.tagName === 'IMG') {
+            button = button.closest('.upload-item').querySelector('.btn-zoom');
+        }
+        if (button) {
+            const buttons = [...el.querySelectorAll('.btn-zoom')]
+            index = buttons.indexOf(button);
+        }
+        return index;
+    };
+
+    EventHandler.on(el, 'click', '.btn-zoom, .upload-item-body-image', e => {
+        const prev = Data.get(el.getAttribute('data-bb-previewer-id'));
+        prev.viewer.updatePrevList([...el.querySelectorAll('.upload-body img')].map(v => v.src));
+        prev.viewer.show(getIndex(e.delegateTarget));
     })
 }
 
@@ -59,9 +65,9 @@ export function dispose(id) {
     const upload = Data.get(id)
     Data.remove(id)
 
-    const el = upload.el
-    const preventHandler = upload.preventHandler
     if (upload) {
+        const { el, preventHandler } = upload;
+
         EventHandler.off(el, 'click')
         EventHandler.off(el, 'drop')
         EventHandler.off(el, 'paste')
