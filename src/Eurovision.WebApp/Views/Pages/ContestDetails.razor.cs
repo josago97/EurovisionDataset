@@ -22,18 +22,13 @@ public partial class ContestDetails : IDisposable
     private bool HasPointsColumnSmall { get; set; }
     private bool HasRunningColumnSmall { get; set; }
     private string CancelationMessage { get; set; }
-    private bool IsCancelled => !string.IsNullOrEmpty(CancelationMessage);
+    private bool IsCancelled { get; set; }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-
-        if (Settings.CONTESTS_CANCELLED.TryGetValue(Year, out string message))
-        {
-            CancelationMessage = message;
-        }
-
         Contest = GetContestData(GetContest(Year));
+        CheckIfCancelled();
     }
 
     protected override void OnInitialized()
@@ -48,6 +43,15 @@ public partial class ContestDetails : IDisposable
         base.Dispose();
 
         ResizeListener.OnResized -= OnWindowResized;
+    }
+
+    private void CheckIfCancelled()
+    {
+        if (Year == 2020 && Page == PageType.Senior)
+        {
+            IsCancelled = true;
+            CancelationMessage = "Eurovision Song Contest 2020 was cancelled due to the COVID-19 pandemic";
+        }
     }
 
     private void OnWindowResized(object _, BrowserWindowSize window)

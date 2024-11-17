@@ -1,4 +1,6 @@
-﻿namespace Eurovision.Dataset.Scrapers.Senior;
+﻿using Eurovision.Dataset.Scraping.Scrapers;
+
+namespace Eurovision.Dataset.Scraping.Scrapers.Senior;
 
 internal class Ogaespain : BaseOgaespain
 {

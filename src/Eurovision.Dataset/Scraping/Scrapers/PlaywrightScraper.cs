@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace Eurovision.Dataset.Scrapers;
+namespace Eurovision.Dataset.Scraping.Scrapers;
 
 public class PlaywrightScraper : IDisposable
 {

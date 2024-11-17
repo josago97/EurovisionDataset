@@ -1,8 +1,9 @@
 ﻿using Eurovision.Dataset.Entities.Senior;
+using Eurovision.Dataset.Scraping.Scrapers;
 using Eurovision.Dataset.Utilities;
 using Microsoft.Playwright;
 
-namespace Eurovision.Dataset.Scrapers.Senior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Senior;
 
 public class Eschome
 {

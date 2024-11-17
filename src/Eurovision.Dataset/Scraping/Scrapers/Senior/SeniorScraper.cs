@@ -1,9 +1,10 @@
 ﻿using Eurovision.Dataset.Entities;
+using Eurovision.Dataset.Scraping.Scrapers;
 using Eurovision.Dataset.Utilities;
 using Contest = Eurovision.Dataset.Entities.Senior.Contest;
 using Contestant = Eurovision.Dataset.Entities.Senior.Contestant;
 
-namespace Eurovision.Dataset.Scrapers.Senior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Senior;
 
 internal class SeniorScraper : BaseScraper<Contest, Contestant>
 {

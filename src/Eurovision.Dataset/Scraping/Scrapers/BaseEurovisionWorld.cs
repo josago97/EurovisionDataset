@@ -6,7 +6,7 @@ using Microsoft.Playwright;
 using Sharplus.System.Linq;
 using Sharplus.Tasks;
 
-namespace Eurovision.Dataset.Scrapers;
+namespace Eurovision.Dataset.Scraping.Scrapers;
 
 public abstract class BaseEurovisionWorld
 {
@@ -74,7 +74,7 @@ public abstract class BaseEurovisionWorld
             }
 
             index++;
-        } 
+        }
         while (lastYear == -1);
 
         return lastYear;

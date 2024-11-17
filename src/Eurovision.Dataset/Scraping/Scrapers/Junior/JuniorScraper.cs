@@ -1,6 +1,6 @@
 ﻿using Eurovision.Dataset.Entities;
 
-namespace Eurovision.Dataset.Scrapers.Junior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Junior;
 
 internal class JuniorScraper : BaseScraper<Contest, Contestant>
 {

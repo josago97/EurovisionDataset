@@ -1,7 +1,7 @@
 ﻿using Eurovision.Dataset.Entities;
 using SkiaSharp;
 
-namespace Eurovision.Dataset.Scrapers;
+namespace Eurovision.Dataset.Scraping.Scrapers;
 
 internal abstract class BaseLogoScraper
 {

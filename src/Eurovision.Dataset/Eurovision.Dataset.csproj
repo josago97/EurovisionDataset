@@ -8,19 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\1995_russia_lyrics.txt" />
-    <None Remove="Assets\2005_russia_lyrics.txt" />
-    <None Remove="Assets\2015_russia_lyrics.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Assets\1995_russia_lyrics.txt" />
     <EmbeddedResource Include="Assets\2005_russia_lyrics.txt" />
     <EmbeddedResource Include="Assets\2015_russia_lyrics.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotNetRdf" Version="3.2.0" />
+    <PackageReference Include="dotNetRdf" Version="3.3.0" />
     <PackageReference Include="Microsoft.Playwright" Version="1.48.0" />
     <PackageReference Include="Sharplus" Version="1.4.0" />
     <PackageReference Include="SkiaSharp" Version="2.88.8" />

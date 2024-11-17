@@ -2,9 +2,9 @@
 using Eurovision.Dataset.Utilities;
 using Sharplus.System.Linq;
 
-namespace Eurovision.Dataset.Scrapers;
+namespace Eurovision.Dataset.Scraping.Scrapers;
 
-internal abstract class BaseScraper<TContest, TContestant>
+internal abstract class BaseScraper<TContest, TContestant> : IContestScraper<TContest>
     where TContest : Contest, new()
     where TContestant : Contestant, new()
 {

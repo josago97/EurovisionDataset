@@ -43,10 +43,14 @@ select:hover {
     cursor: pointer;
 }
 
-.contest-data {
+.contest-data, .contestant-data {
     background-color: var(--info-box-color);
     border-radius: 20px;
     padding: 10px;
+
+    & p:last-child {
+      margin: 0; 
+    }
 }
 
 .data-entry {

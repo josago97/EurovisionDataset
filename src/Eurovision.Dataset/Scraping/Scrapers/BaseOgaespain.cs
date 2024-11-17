@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
 using SkiaSharp;
 
-namespace Eurovision.Dataset.Scrapers;
+namespace Eurovision.Dataset.Scraping.Scrapers;
 
 internal abstract class BaseOgaespain
 {
@@ -11,7 +11,7 @@ internal abstract class BaseOgaespain
 
     public async Task<SKData> ScrapAsync(int year)
     {
-        using HttpClient httpClient = new HttpClient();
+        using HttpClient httpClient = new ScraperHttpClient();
         using PlaywrightScraper playwrightScraper = new PlaywrightScraper();
 
         await playwrightScraper.LoadPageAsync($"{BASE_URL}/{GetPageUrl(year)}");

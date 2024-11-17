@@ -22,6 +22,9 @@ public static class Properties
     private const string JSON_INDENTED_ARGUMENT = "json_indented";
     public static bool JSON_INDENTED { get; private set; } = false;
 
+    private const string REUSE_OLD_DATA_ARGUMENT = "reuse";
+    public static bool REUSE_OLD_DATA { get; private set; } = false;
+
     private const string THROW_EXCEPTION_UNAVAILABLE_DATA_ARGUMENT = "exception_no_data";
     public static bool THROW_EXCEPTION_UNAVAILABLE_DATA { get; private set; } = false;
 
@@ -58,6 +61,10 @@ public static class Properties
 
                 case JSON_INDENTED_ARGUMENT:
                     JSON_INDENTED = true;
+                    break;
+
+                case REUSE_OLD_DATA_ARGUMENT:
+                    REUSE_OLD_DATA = true;
                     break;
 
                 case THROW_EXCEPTION_UNAVAILABLE_DATA_ARGUMENT:

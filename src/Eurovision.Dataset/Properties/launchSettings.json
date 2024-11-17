@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Eurovision.Dataset": {
+      "commandName": "Project",
+      "commandLineArgs": "-start 1956 -end 1956 -senior"
+    },
+    "Get all data": {
+      "commandName": "Project",
+      "commandLineArgs": "-hide"
+    },
+    "Junior data": {
+      "commandName": "Project",
+      "commandLineArgs": "-junior -reuse"
+    }
+  }
+}

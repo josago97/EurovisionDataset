@@ -13,4 +13,8 @@ internal class Constants
     public const string SENIOR_LOGOS_FOLDER = $"{LOGOS_FOLDER}/senior";
 
     public const string DATASET_PATH = $"{ROOT_PATH}/dataset";
+
+    public const string COUNTRIES_FILENAME = "countries";
+    public const string SENIOR_FILENAME = "eurovision";
+    public const string JUNIOR_FILENAME = "junior";
 }

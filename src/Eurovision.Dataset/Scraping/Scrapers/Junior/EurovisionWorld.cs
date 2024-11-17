@@ -1,9 +1,10 @@
 ﻿using Eurovision.Dataset.Entities;
+using Eurovision.Dataset.Scraping.Scrapers;
 using Eurovision.Dataset.Utilities;
 using Microsoft.Playwright;
 using Sharplus.Tasks;
 
-namespace Eurovision.Dataset.Scrapers.Junior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Junior;
 
 public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
 {

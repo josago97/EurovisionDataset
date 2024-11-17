@@ -1,4 +1,4 @@
-﻿namespace Eurovision.Dataset.Scrapers.Junior;
+﻿namespace Eurovision.Dataset.Scraping.Scrapers.Junior;
 
 internal class JuniorLogoScraper : BaseLogoScraper
 {

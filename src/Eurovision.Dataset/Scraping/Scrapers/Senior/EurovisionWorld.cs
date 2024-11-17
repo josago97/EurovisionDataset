@@ -1,11 +1,12 @@
 ﻿using Eurovision.Dataset.Entities;
+using Eurovision.Dataset.Scraping.Scrapers;
 using Microsoft.Playwright;
 using Sharplus.Tasks;
 using Contest = Eurovision.Dataset.Entities.Senior.Contest;
 using Contestant = Eurovision.Dataset.Entities.Senior.Contestant;
 using Score = Eurovision.Dataset.Entities.Senior.Score;
 
-namespace Eurovision.Dataset.Scrapers.Senior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Senior;
 
 public class EurovisionWorld : BaseEurovisionWorld<Contest, Contestant>
 {

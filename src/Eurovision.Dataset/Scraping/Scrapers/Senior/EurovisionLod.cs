@@ -8,7 +8,7 @@ using VDS.RDF.Query;
 using VDS.RDF.Writing;
 using StringWriter = VDS.RDF.Writing.StringWriter;
 
-namespace Eurovision.Dataset.Scrapers.Senior;
+namespace Eurovision.Dataset.Scraping.Scrapers.Senior;
 
 public class EurovisionLod
 {
