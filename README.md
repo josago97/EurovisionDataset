@@ -8,6 +8,8 @@ The data is obtained from the [ESC Home](https://eschome.net/), [Eurovision Worl
 
 You can see the dataset information on this [web page](https://josago97.github.io/EurovisionDataset/).
 
+You can also access the data through [this api](https://eurovisionapi.runasp.net/).
+
 ## Downloading the dataset
 
 The dataset can be downloaded [here](https://github.com/josago97/EurovisionDataset/releases) or from the [dataset folder](https://github.com/josago97/EurovisionDataset/tree/main/dataset).
