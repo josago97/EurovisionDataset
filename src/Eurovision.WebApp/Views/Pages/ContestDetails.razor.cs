@@ -27,8 +27,8 @@ public partial class ContestDetails : IDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        Contest = GetContestData(GetContest(Year));
         CheckIfCancelled();
+        Contest = GetContestData(GetContest(Year));   
     }
 
     protected override void OnInitialized()
